@@ -93,7 +93,7 @@ public class runUser extends AppCompatActivity implements View.OnClickListener {
                 break;
             case R.id.search_button:
                 String topic = search_bar.getText().toString();
-                intent = new Intent(this, SearchFragment.class);
+                intent = new Intent(this, SearchActivity.class);
                 startActivity(intent);
                 break;
             case R.id.uploadButton:
@@ -102,6 +102,4 @@ public class runUser extends AppCompatActivity implements View.OnClickListener {
 
     }
 
-    private void channelFragment() {
-    }
 }

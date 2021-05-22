@@ -16,6 +16,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".newChannel"></activity>
+        <activity android:name=".runUser"></activity>
+        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".ChannelActivity"></activity>
     </application>
 
 </manifest>

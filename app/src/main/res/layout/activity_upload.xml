@@ -29,8 +29,23 @@
         android:hint="Hashtags (e.g. #life #joy #smile)"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/videoNameEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintVertical_bias="0.057"
         tools:layout_editor_absoluteX="0dp" />
+
+    <Button
+        android:id="@+id/subscribeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/app_color"
+        android:text="@string/uploadText"
+        android:textColor="@color/text_color_in_app_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/hashtagsEditText"
+        app:layout_constraintStart_toStartOf="@id/hashtagsEditText"
+        app:layout_constraintTop_toBottomOf="@id/hashtagsEditText"
+        app:layout_constraintVertical_bias="0.099" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
