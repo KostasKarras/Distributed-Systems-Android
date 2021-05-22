@@ -12,7 +12,7 @@ import android.widget.TabHost;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-public class runUser extends AppCompatActivity implements View.OnClickListener {
+public class runUser extends AppCompatActivity {
 
     TabHost tab;
     ViewPager viewPager;
@@ -64,21 +64,28 @@ public class runUser extends AppCompatActivity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_page_activity);
 
+        search_bar = (EditText)findViewById(R.id.search_bar);
+
+        /*
+
         profile_button = (ImageButton)findViewById(R.id.profileButton);
         exit_button = (ImageButton)findViewById(R.id.exitButton);
         home_button = (ImageButton)findViewById(R.id.homeButton);
         search_button = (ImageButton)findViewById(R.id.search_button);
         upload_button = (ImageButton)findViewById(R.id.uploadButton);
-        search_bar = (EditText)findViewById(R.id.search_bar);
 
+        /*
         profile_button.setOnClickListener(this);
         exit_button.setOnClickListener(this);
         home_button.setOnClickListener(this);
         search_button.setOnClickListener(this);
         upload_button.setOnClickListener(this);
 
+         */
+
     }
 
+    /*
     @Override
     public void onClick(View v) {
         Intent intent;
@@ -102,4 +109,22 @@ public class runUser extends AppCompatActivity implements View.OnClickListener {
 
     }
 
+     */
+
+    public void channelActivity(View v) {
+        Intent intent = new Intent(this, ChannelActivity.class);
+        startActivity(intent);
+    }
+
+    public void searchActivity(View v) {
+        String topic = search_bar.getText().toString();
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+    }
+
+    public void uploadActivity(View v) {}
+
+    public void homeActivity(View v) {}
+
+    public void exit(View v) {}
 }
