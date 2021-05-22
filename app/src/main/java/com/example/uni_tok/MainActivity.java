@@ -3,6 +3,7 @@ package com.example.uni_tok;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -19,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         IP = (EditText) findViewById(R.id.AddressKeeperIP);
 
         submitButton = (Button) findViewById(R.id.AddressKeeperSubmit);
-        submitButton.setOnClickListener(v -> newChannel());
+        submitButton.setOnClickListener((View v) -> newChannel());
     }
 
     public void newChannel(){
