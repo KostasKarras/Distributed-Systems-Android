@@ -1,3 +1,4 @@
+/*
 package com.example.uni_tok;
 
 import android.content.Context;
@@ -42,3 +43,4 @@ public class MyAdapter extends FragmentPagerAdapter {
         return totalTabs;
     }
 }
+ */

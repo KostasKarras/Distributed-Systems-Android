@@ -1,4 +1,4 @@
-package com.example.uni_tok;
+/*package com.example.uni_tok;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,3 +18,4 @@ public class VideoFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_video, container, false);
     }
 }
+ */

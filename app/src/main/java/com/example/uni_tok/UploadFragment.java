@@ -1,3 +1,4 @@
+/*
 package com.example.uni_tok;
 
 import android.os.Bundle;
@@ -18,3 +19,4 @@ public class UploadFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_upload, container, false);
     }
 }
+*/
