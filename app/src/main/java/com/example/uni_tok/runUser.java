@@ -84,7 +84,7 @@ public class runUser extends AppCompatActivity implements View.OnClickListener {
         Intent intent;
         switch (v.getId()) {
             case R.id.profileButton:
-                intent = new Intent(this, ChannelFragment.class);
+                intent = new Intent(this, ChannelActivity.class);
                 startActivity(intent);
                 break;
             case R.id.exitButton:
