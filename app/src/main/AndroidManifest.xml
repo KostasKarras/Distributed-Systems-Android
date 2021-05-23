@@ -20,6 +20,8 @@
         <activity android:name=".runUser"></activity>
         <activity android:name=".SearchActivity"></activity>
         <activity android:name=".ChannelActivity"></activity>
+        <activity android:name=".UploadVideoActivity"></activity>
+        <activity android:name=".UploadActivity"></activity>
     </application>
 
 </manifest>

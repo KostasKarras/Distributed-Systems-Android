@@ -1,15 +1,22 @@
 package com.example.uni_tok;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
 
 public class ChannelActivity extends AppCompatActivity {
 
     EditText search_bar;
+    ArrayAdapter<Uri> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +25,14 @@ public class ChannelActivity extends AppCompatActivity {
 
         search_bar = (EditText)findViewById(R.id.search_bar);
 
+//        ListView lv = (ListView) findViewById(R.id.listView);
+//
+//        ArrayList<Uri> videos = UploadVideoActivity.getVideos();
+//
+//        //adapter will be notified when the user uploads a video
+//        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, videos);
+//
+//        lv.setAdapter(arrayAdapter);
     }
 
     public void channelActivity(View v) {}
@@ -28,7 +43,10 @@ public class ChannelActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void uploadActivity(View v) {}
+    public void uploadVideoActivity(View v) {
+        Intent intent = new Intent(this, UploadVideoActivity.class);
+        startActivity(intent);
+    }
 
     public void homeActivity(View v) {
 

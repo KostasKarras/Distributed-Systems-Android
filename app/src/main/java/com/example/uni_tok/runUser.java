@@ -122,7 +122,10 @@ public class runUser extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void uploadActivity(View v) {}
+    public void uploadVideoActivity(View v) {
+        Intent intent = new Intent(this, UploadVideoActivity.class);
+        startActivity(intent);
+    }
 
     public void homeActivity(View v) {}
 

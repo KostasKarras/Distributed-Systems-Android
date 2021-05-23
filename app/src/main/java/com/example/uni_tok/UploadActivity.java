@@ -4,21 +4,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class SearchActivity extends AppCompatActivity {
+public class UploadActivity extends AppCompatActivity {
 
     EditText search_bar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_search);
+        setContentView(R.layout.activity_upload);
 
-        search_bar = (EditText)findViewById(R.id.search_bar);
-
+        search_bar = (EditText) findViewById(R.id.search_bar);
     }
 
     public void channelActivity(View v) {
@@ -43,5 +41,10 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void exit(View v) {}
+
+    public void uploadActivity(View view) {
+        Intent intent = new Intent(this, UploadActivity.class);
+        startActivity(intent);
+    }
 
 }

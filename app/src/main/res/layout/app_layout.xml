@@ -166,6 +166,7 @@
                 android:maxHeight="34dp"
                 android:scaleType="fitCenter"
                 android:src="@mipmap/upload_icon"
+                android:onClick="uploadVideoActivity"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.833"
