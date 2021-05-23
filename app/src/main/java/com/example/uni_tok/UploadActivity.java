@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 public class UploadActivity extends AppCompatActivity {
 
     EditText search_bar;
+    EditText videoNameEditText;
+    EditText hashtagsEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +19,9 @@ public class UploadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_upload);
 
         search_bar = (EditText) findViewById(R.id.search_bar);
+
+        videoNameEditText = (EditText) findViewById(R.id.videoNameEditText);
+        hashtagsEditText = (EditText) findViewById(R.id.hashtagsEditText);
     }
 
     public void channelActivity(View v) {

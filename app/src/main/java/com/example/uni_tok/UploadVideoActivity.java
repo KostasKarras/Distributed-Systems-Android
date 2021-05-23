@@ -8,22 +8,18 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class UploadVideoActivity extends Activity {
 
     private static final int GALLERY_REQUEST_CODE = 2000;
     private VideoView videoView;
     private Button playButton;
-    private MediaController media;
     public ArrayList<Uri> videos = new ArrayList<Uri>();
     private ArrayAdapter<String> arrayAdapter;
     private EditText search_bar;
@@ -45,17 +41,17 @@ public class UploadVideoActivity extends Activity {
 //
 //        lv.setAdapter(arrayAdapter);
 
+
         Intent videoPicker = new Intent();
         videoPicker.setAction(Intent.ACTION_GET_CONTENT);
         videoPicker.setType("video/*");
         startActivityForResult(Intent.createChooser(videoPicker, "Pick a video"), GALLERY_REQUEST_CODE);
-
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-            media = new MediaController(this);
+            MediaController media = new MediaController(this);
 
             Uri videoData = data.getData();
             VideoView myVideo = (VideoView) findViewById(R.id.videoView);
