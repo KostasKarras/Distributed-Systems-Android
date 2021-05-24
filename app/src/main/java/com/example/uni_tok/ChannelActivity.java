@@ -11,6 +11,7 @@ import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ChannelActivity extends AppCompatActivity {
@@ -25,14 +26,18 @@ public class ChannelActivity extends AppCompatActivity {
 
         search_bar = (EditText)findViewById(R.id.search_bar);
 
-//        ListView lv = (ListView) findViewById(R.id.listView);
+        Bundle getUri = this.getIntent().getExtras();
+        ArrayList<Uri> videoList = getUri.getParcelableArrayList("videosToChannel");
+
+//        Bundle getVideoName = this.getIntent().getExtras();
+//        ArrayList<String> videoNames = (ArrayList<String>) getVideoName.getSerializable("videoName");
 //
-//        ArrayList<Uri> videos = UploadVideoActivity.getVideos();
-//
-//        //adapter will be notified when the user uploads a video
-//        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, videos);
-//
-//        lv.setAdapter(arrayAdapter);
+//        Bundle getHashtags = this.getIntent().getExtras();
+//        ArrayList<String []> associatedHashtags = (ArrayList<String[]>) getHashtags.getSerializable("hashtags");
+
+        ListView lv = (ListView) findViewById(R.id.listView);
+        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, videoList);
+        lv.setAdapter(arrayAdapter);
     }
 
     public void channelActivity(View v) {}

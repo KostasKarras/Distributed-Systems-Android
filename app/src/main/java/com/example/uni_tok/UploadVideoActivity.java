@@ -13,6 +13,7 @@ import android.widget.VideoView;
 
 import androidx.annotation.Nullable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class UploadVideoActivity extends Activity {
@@ -20,7 +21,7 @@ public class UploadVideoActivity extends Activity {
     private static final int GALLERY_REQUEST_CODE = 2000;
     private VideoView videoView;
     private Button playButton;
-    public ArrayList<Uri> videos = new ArrayList<Uri>();
+    private ArrayList<Uri> videos = new ArrayList<Uri>();;
     private ArrayAdapter<String> arrayAdapter;
     private EditText search_bar;
 
@@ -30,17 +31,6 @@ public class UploadVideoActivity extends Activity {
         setContentView(R.layout.activity_upload_video);
 
         search_bar = (EditText) findViewById(R.id.search_bar);
-
-//        ListView lv = (ListView) findViewById(R.id.listView);
-//
-//        //arraylist which is going to store the VideoViews
-//        videos = new ArrayList<>();
-//
-//        //adapter will be notified when the user uploads a video
-//        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, videos);
-//
-//        lv.setAdapter(arrayAdapter);
-
 
         Intent videoPicker = new Intent();
         videoPicker.setAction(Intent.ACTION_GET_CONTENT);
@@ -64,17 +54,10 @@ public class UploadVideoActivity extends Activity {
             //add video in arraylist
             videos.add(videoData);
 
-            //notify to change the list which is printed
-//            arrayAdapter.notifyDataSetChanged();
-
             //start the video
             myVideo.start();
         }
     }
-
-//    public ArrayList<Uri> getVideos(){
-//        return videos;
-//    }
 
     public void channelActivity(View v) {
         Intent intent = new Intent(this, ChannelActivity.class);
@@ -101,6 +84,9 @@ public class UploadVideoActivity extends Activity {
 
     public void uploadActivity(View view) {
         Intent intent = new Intent(this, UploadActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("videos",(ArrayList<Uri>) videos);
+        intent.putExtras(bundle);
         startActivity(intent);
     }
 }
