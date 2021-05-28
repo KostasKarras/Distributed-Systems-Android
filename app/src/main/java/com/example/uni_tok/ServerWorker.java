@@ -13,6 +13,13 @@ import androidx.work.WorkerParameters;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.HashMap;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 public class ServerWorker extends Worker{
@@ -44,6 +51,7 @@ public class ServerWorker extends Worker{
         }
         */
 
+        AppNodeImpl.handleRequest();
 
         return Result.success();
 

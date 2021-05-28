@@ -116,6 +116,31 @@ public class AppNodeImpl {
     // --------------- END OF MICHALIS CHANGES -------------- //
 
 
+    // --------------- DIMITRIS CHANGES -------------- //
+
+    public static void handleRequest() {
+        try {
+            while(true) {
+                Socket connectionSocket = serverSocket.accept();
+                new ServeRequest(connectionSocket).start();
+            }
+        } catch(IOException e) {
+            /* Crash the server if IO fails. Something bad has happened. */
+            throw new RuntimeException("Could not create ServerSocket ", e);
+        } finally {
+            try {
+                serverSocket.close();
+            } catch (IOException | NullPointerException ioException) {
+                ioException.printStackTrace();
+            }
+        }
+    }
+
+
+
+    // --------------- END OF DIMITRIS CHANGES -------------- //
+
+
     public void initialize(int port) {
 
         //FIRST CONNECTION
@@ -139,7 +164,7 @@ public class AppNodeImpl {
         }
 
 
-        new RequestHandler(serverSocket).start();
+        //new RequestHandler(serverSocket).start();
 
         runUser();
 
@@ -243,7 +268,7 @@ public class AppNodeImpl {
         }
     }
 
-    public void push(int id, ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) throws NoSuchElementException {
+    public static void push(int id, ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) throws NoSuchElementException {
 
         ArrayList<byte[]> chunks = generateChunks(channel.getVideoFile_byID(id));
 
@@ -343,7 +368,7 @@ public class AppNodeImpl {
         }
     }
 
-    public ArrayList<byte[]> generateChunks(VideoFile video) {
+    public static ArrayList<byte[]> generateChunks(VideoFile video) {
 
         ArrayList<byte[]> my_arraylist = new ArrayList<byte []>();
 
@@ -606,110 +631,110 @@ public class AppNodeImpl {
         }
     }
 
-    public HashMap<ChannelKey, String> getChannelVideoMap() {
+    public static HashMap<ChannelKey, String> getChannelVideoMap() {
         return channel.getChannelVideoNames();
     }
 
-    public HashMap<ChannelKey, String> getHashtagVideoMap(String hashtag) {
+    public static HashMap<ChannelKey, String> getHashtagVideoMap(String hashtag) {
         return channel.getChannelVideoNamesByHashtag(hashtag);
     }
 
 
-    //CHANGES HAVE BEEN MADE
-    class RequestHandler extends Thread {
-
-        public ServerSocket serverSocket;
-        public Socket connectionSocket;
-
-        public RequestHandler(ServerSocket serverSocket) {
-            this.serverSocket = serverSocket;
-        }
-
-        public void run() {
-
-            try {
-                while(true) {
-                    connectionSocket = serverSocket.accept();
-                    new ServeRequest(connectionSocket).start();
-                }
-            } catch(IOException e) {
-                /* Crash the server if IO fails. Something bad has happened. */
-                throw new RuntimeException("Could not create ServerSocket ", e);
-            } finally {
-                try {
-                    serverSocket.close();
-                } catch (IOException | NullPointerException ioException) {
-                    ioException.printStackTrace();
-                }
-            }
-        }
-    }
-
-    class ServeRequest extends Thread {
-
-        private Socket socket;
-        private ObjectInputStream objectInputStream;
-        private ObjectOutputStream objectOutputStream;
-
-        ServeRequest(Socket s) {
-            socket = s;
-            try {
-                objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                objectInputStream = new ObjectInputStream(socket.getInputStream());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public void run() {
-
-            try{
-
-                int option = (int) objectInputStream.readObject();
-
-                if (option == 1) { //Pull List
-
-                    //Choice between sending whole channel or files based on hashtag
-                    String choice = (String) objectInputStream.readObject();
-                    System.out.println(choice);
-                    if (choice.equals("CHANNEL")) {
-                        HashMap<ChannelKey, String> videoList = getChannelVideoMap();
-                        objectOutputStream.writeObject(videoList);
-                    }
-                    else {
-                        HashMap<ChannelKey, String> videoList = getHashtagVideoMap(choice);
-                        objectOutputStream.writeObject(videoList);
-                    }
-
-                } else if (option == 2) { //Pull Video
-
-                    ChannelKey channelKey = (ChannelKey) objectInputStream.readObject();
-                    try {
-                        push(channelKey.getVideoID(), objectInputStream, objectOutputStream);
-                    } catch (NoSuchElementException nsee) {
-                        objectOutputStream.writeObject(false);
-                        objectOutputStream.flush();
-                    }
-
-                } else if (option == 3) {
-
-                    String notificationMessage = (String) objectInputStream.readObject();
-                    System.out.println(notificationMessage);
-
-                }
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    objectInputStream.close();
-                    objectOutputStream.close();
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+//    //CHANGES HAVE BEEN MADE
+//    class RequestHandler extends Thread {
+//
+//        public ServerSocket serverSocket;
+//        public Socket connectionSocket;
+//
+//        public RequestHandler(ServerSocket serverSocket) {
+//            this.serverSocket = serverSocket;
+//        }
+//
+//        public void run() {
+//
+//            try {
+//                while(true) {
+//                    connectionSocket = serverSocket.accept();
+//                    new ServeRequest(connectionSocket).start();
+//                }
+//            } catch(IOException e) {
+//                /* Crash the server if IO fails. Something bad has happened. */
+//                throw new RuntimeException("Could not create ServerSocket ", e);
+//            } finally {
+//                try {
+//                    serverSocket.close();
+//                } catch (IOException | NullPointerException ioException) {
+//                    ioException.printStackTrace();
+//                }
+//            }
+//        }
+//    }
+//
+//    class ServeRequest extends Thread {
+//
+//        private Socket socket;
+//        private ObjectInputStream objectInputStream;
+//        private ObjectOutputStream objectOutputStream;
+//
+//        ServeRequest(Socket s) {
+//            socket = s;
+//            try {
+//                objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+//                objectInputStream = new ObjectInputStream(socket.getInputStream());
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        public void run() {
+//
+//            try{
+//
+//                int option = (int) objectInputStream.readObject();
+//
+//                if (option == 1) { //Pull List
+//
+//                    //Choice between sending whole channel or files based on hashtag
+//                    String choice = (String) objectInputStream.readObject();
+//                    System.out.println(choice);
+//                    if (choice.equals("CHANNEL")) {
+//                        HashMap<ChannelKey, String> videoList = getChannelVideoMap();
+//                        objectOutputStream.writeObject(videoList);
+//                    }
+//                    else {
+//                        HashMap<ChannelKey, String> videoList = getHashtagVideoMap(choice);
+//                        objectOutputStream.writeObject(videoList);
+//                    }
+//
+//                } else if (option == 2) { //Pull Video
+//
+//                    ChannelKey channelKey = (ChannelKey) objectInputStream.readObject();
+//                    try {
+//                        push(channelKey.getVideoID(), objectInputStream, objectOutputStream);
+//                    } catch (NoSuchElementException nsee) {
+//                        objectOutputStream.writeObject(false);
+//                        objectOutputStream.flush();
+//                    }
+//
+//                } else if (option == 3) {
+//
+//                    String notificationMessage = (String) objectInputStream.readObject();
+//                    System.out.println(notificationMessage);
+//
+//                }
+//            } catch (IOException | ClassNotFoundException e) {
+//                e.printStackTrace();
+//            } finally {
+//                try {
+//                    objectInputStream.close();
+//                    objectOutputStream.close();
+//                    socket.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//    }
 
     public void runUser() {
         //BUILD INTERFACE
