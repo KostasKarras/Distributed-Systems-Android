@@ -102,7 +102,7 @@ public class runUser extends AppCompatActivity {
         upload_button.setOnClickListener(this);
 
          */
-
+/*
         // ---------------- MICHALIS TEST CODE ------------------- //
         OneTimeWorkRequest oneTimeRequest = new OneTimeWorkRequest.Builder(ServerWorker.class)
                 .build();
@@ -113,6 +113,8 @@ public class runUser extends AppCompatActivity {
 
 
         // ---------------- END OF MICHALIS TEST CODE ------------------- //
+
+ */
 
     }
 

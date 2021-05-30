@@ -24,11 +24,12 @@ public class ServerWorker extends Worker{
     @NonNull
     @Override
     public Result doWork() {
-        /*
         try{
             int x;
             for (x = 1; x < 11; x++) {
                 final int y = x;
+
+
                 Handler handler = new Handler(Looper.getMainLooper());
                 handler.post(new Runnable() {
                     @Override
@@ -37,12 +38,14 @@ public class ServerWorker extends Worker{
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
+
+
                 TimeUnit.SECONDS.sleep(5);
             }
         } catch (InterruptedException ie) {
             Log.d("IE", ie.getMessage());
         }
-        */
+
 
 
         return Result.success();

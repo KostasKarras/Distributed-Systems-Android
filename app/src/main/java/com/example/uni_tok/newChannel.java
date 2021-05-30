@@ -2,9 +2,11 @@ package com.example.uni_tok;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkContinuation;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
@@ -17,11 +19,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.concurrent.TimeUnit;
+
+import kotlin.coroutines.Continuation;
+
 public class newChannel extends AppCompatActivity {
 
     EditText channelName;
     Button submitButton;
     SharedPreferences sharedPreferences;
+    OneTimeWorkRequest oneTimeRequest;
+    WorkManager workManager;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +42,18 @@ public class newChannel extends AppCompatActivity {
 
         submitButton = (Button) findViewById(R.id.channelButton);
         submitButton.setOnClickListener(v -> runUser());
+
+        Data data = new Data.Builder()
+                .putString("ChannelName", channelName.getText().toString())
+                .build();
+
+        oneTimeRequest = new OneTimeWorkRequest.Builder(SetChannelBrokerWorker.class)
+                .keepResultsForAtLeast(1, TimeUnit.SECONDS)
+                .addTag("REQUEST")
+                .setInputData(data)
+                .build();
+
+        workManager = WorkManager.getInstance(this);
     }
 /*
     public void runUser(){
@@ -52,45 +72,52 @@ public class newChannel extends AppCompatActivity {
 
     public void runUser() {
 
+        Log.d("RUN USER", "CALLED");
+        /*
         Data data = new Data.Builder()
                             .putString("ChannelName", channelName.getText().toString())
                             .build();
 
-        OneTimeWorkRequest oneTimeRequest = new OneTimeWorkRequest.Builder(SetChannelBrokerWorker.class)
+        oneTimeRequest = new OneTimeWorkRequest.Builder(SetChannelBrokerWorker.class)
+                .keepResultsForAtLeast(1, TimeUnit.SECONDS)
                 .setInputData(data)
                 .build();
 
+*/
+
         Toast.makeText(getApplicationContext(), "Starting worker...", Toast.LENGTH_SHORT)
                 .show();
-        WorkManager.getInstance(this)
-                .enqueueUniqueWork("Connect to Broker",
-                        ExistingWorkPolicy.KEEP, oneTimeRequest);
-        WorkManager.getInstance(this).getWorkInfoByIdLiveData(oneTimeRequest.getId())
+
+        workManager.enqueueUniqueWork("Connect to Broker",
+                        ExistingWorkPolicy.REPLACE, oneTimeRequest);
+
+        workManager.getWorkInfoByIdLiveData(oneTimeRequest.getId())
                 .observe(this, workInfo -> {
                     Log.d("State", workInfo.getState().name());
                     if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                        boolean unique = workInfo.getOutputData()
-                                                 .getBoolean("UNIQUE", false);
-                        if (!unique) {
-                            Toast.makeText(getApplicationContext(), "Channel Name exists. Give another!",
-                                           Toast.LENGTH_SHORT)
-                                 .show();
-                        } else {
-                            Intent intent = new Intent(this, runUser.class);
-                            startActivity(intent);
-                            finish();
-                        }
+
+                        Intent intent = new Intent(this, runUser.class);
+                        startActivity(intent);
+                        finish();
 
                     } else if (workInfo.getState() == WorkInfo.State.FAILED) {
-                        Toast.makeText(getApplicationContext(),
-                                "Something wrong happened" +
-                                        "Try again.", Toast.LENGTH_SHORT).show();
+                        String error = workInfo.getOutputData().getString("ERROR");
+                        if (error.equals("EXCEPTION")) {
+                            Toast.makeText(getApplicationContext(),
+                                    "Something wrong happened" +
+                                            "Try again.", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(getApplicationContext(),
+                                    "Channel name already exists." +
+                                            "Try again.", Toast.LENGTH_SHORT).show();
+                        }
                         Log.d("Status", "Status failed");
+
                     }
 
                 });
 
-
+        Log.d("RUN USER", "STOPPED");
 
 
     }

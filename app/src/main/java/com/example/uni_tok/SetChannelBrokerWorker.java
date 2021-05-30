@@ -1,6 +1,8 @@
 package com.example.uni_tok;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,14 +34,24 @@ public class SetChannelBrokerWorker extends Worker {
             channelName = getInputData().getString("ChannelName");
             unique = AppNodeImpl.setChannelBroker(channelName);
 
+            if (unique) return Result.success();
+
         } catch (InterruptedException ie) {
             Log.d("IE", ie.getMessage());
-            return Result.failure();
+            outputData = new Data.Builder().putString("ERROR", "EXCEPTION").build();
+            return Result.failure(outputData);
         } catch (IOException | ClassNotFoundException io) {
             Log.d("IO", io.getMessage());
-            return Result.failure();
+            outputData = new Data.Builder().putString("ERROR", "EXCEPTION").build();
+            return Result.failure(outputData);
         }
-        outputData = new Data.Builder().putBoolean("UNIQUE", unique).build();
-        return Result.success(outputData);
+        outputData = new Data.Builder().putString("ERROR", "NOT UNIQUE").build();
+        return Result.failure(outputData);
+    }
+
+    @Override
+    public void onStopped() {
+        Log.d("STATE", "STOPPED");
+        super.onStopped();
     }
 }

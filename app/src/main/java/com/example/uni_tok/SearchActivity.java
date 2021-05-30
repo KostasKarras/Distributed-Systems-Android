@@ -11,10 +11,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -35,22 +42,83 @@ public class SearchActivity extends AppCompatActivity {
                            .getSharedPreferences("appdata", MODE_PRIVATE);
         search_bar = (EditText)findViewById(R.id.search_bar);
         subscribeButton = (Button)findViewById(R.id.subscribeButton);
-        relatedTopic = (TextView)findViewById(R.id.topicTextview);
 
+        relatedTopic = (TextView)findViewById(R.id.topicTextview);
         String topic = sharedPreferences.getString("searchKey", "None");
         relatedTopic.setText(topic);
+
+        // --------------- MICHALIS CHANGES -------------- //
+        boolean is_subscribed;
+        if (topic.charAt(0) == '#') {
+            is_subscribed = AppNodeImpl.getSubscribedToHashtags().contains(topic);
+        } else {
+            is_subscribed = AppNodeImpl.getSubscribedToChannels().contains(topic);
+        }
+
+        if(is_subscribed) {
+            subscribeButton.setBackgroundColor(ContextCompat.getColor(this, R.color.gray));
+            subscribeButton.setText(R.string.subscribedText);
+        }
+
+        // --------------- END OF MICHALIS CHANGES -------------- //
 
     }
 
     public void subscribeAction(View v) {
         Button button = (Button) v;
-        if (button.getText().equals("Subscribe")) {
-            button.setBackgroundColor(getResources().getColor(R.color.gray));
-            button.setText(R.string.subscribedText);
-        } else {
-            button.setBackgroundColor(getResources().getColor(R.color.app_color));
-            button.setText(R.string.subscribeText);
+        String action = button.getText().toString();
+
+        Data data = new Data.Builder()
+                .putString("TOPIC", relatedTopic.getText().toString())
+                .putString("ACTION", action)
+                .build();
+
+        OneTimeWorkRequest subscriptionRequest = new OneTimeWorkRequest.Builder(UserWorker.class)
+                .setInputData(data)
+                .build();
+
+        WorkManager.getInstance(this)
+                .enqueueUniqueWork("Subscription",
+                        ExistingWorkPolicy.REPLACE, subscriptionRequest);
+
+        if (button.getText().equals("SUBSCRIBE")) {
+
+            WorkManager.getInstance(this).getWorkInfoByIdLiveData(subscriptionRequest.getId())
+                .observe(this, workInfo -> {
+                    Log.d("State", workInfo.getState().name());
+                    if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        button.setBackgroundColor(ContextCompat.getColor(this, R.color.gray));
+                        button.setText(R.string.subscribedText);
+                        Toast.makeText(getApplicationContext(), "Successful subscription",
+                                       Toast.LENGTH_SHORT).show();
+
+                    } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                        Toast.makeText(getApplicationContext(),
+                                  "Failed subscription", Toast.LENGTH_SHORT).show();
+                        Log.d("Status", "Status failed");
+                    }
+                });
+
         }
+        else {
+
+            WorkManager.getInstance(this).getWorkInfoByIdLiveData(subscriptionRequest.getId())
+                .observe(this, workInfo -> {
+                    Log.d("State", workInfo.getState().name());
+                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        button.setBackgroundColor(ContextCompat.getColor(this, R.color.app_color));
+                        button.setText(R.string.subscribeText);
+                        Toast.makeText(getApplicationContext(), "Successfully unsubscribed",
+                                       Toast.LENGTH_SHORT).show();
+                    } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                        Toast.makeText(getApplicationContext(), "Failed to unsubscribe",
+                                Toast.LENGTH_SHORT).show();
+                        Log.d("Status", "Status failed");
+                    }
+                });
+
+        }
+
     }
 
     public void channelActivity(View v) {
