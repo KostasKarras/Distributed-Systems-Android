@@ -30,11 +30,16 @@ public class SetChannelBrokerWorker extends Worker {
         Data outputData;
 
         try {
-            TimeUnit.SECONDS.sleep(3);
+            Log.d("ENTERED", "DO WORK");
+            TimeUnit.SECONDS.sleep(1);
             channelName = getInputData().getString("ChannelName");
             unique = AppNodeImpl.setChannelBroker(channelName);
+            Log.d("IS UNIQUE?", Boolean.toString(unique));
 
-            if (unique) return Result.success();
+            //if (unique) return Result.success();
+            if (!unique) return Result.failure();
+            outputData = new Data.Builder().putBoolean("UNIQUE", unique).build();
+            return Result.success(outputData);
 
         } catch (InterruptedException ie) {
             Log.d("IE", ie.getMessage());
@@ -45,8 +50,10 @@ public class SetChannelBrokerWorker extends Worker {
             outputData = new Data.Builder().putString("ERROR", "EXCEPTION").build();
             return Result.failure(outputData);
         }
+        /*
         outputData = new Data.Builder().putString("ERROR", "NOT UNIQUE").build();
         return Result.failure(outputData);
+        */
     }
 
     @Override

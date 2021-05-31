@@ -9,6 +9,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkContinuation;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +20,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
 import kotlin.coroutines.Continuation;
@@ -30,6 +32,9 @@ public class newChannel extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     OneTimeWorkRequest oneTimeRequest;
     WorkManager workManager;
+    Data data;
+
+    int failed_attempts;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,17 +48,9 @@ public class newChannel extends AppCompatActivity {
         submitButton = (Button) findViewById(R.id.channelButton);
         submitButton.setOnClickListener(v -> runUser());
 
-        Data data = new Data.Builder()
-                .putString("ChannelName", channelName.getText().toString())
-                .build();
-
-        oneTimeRequest = new OneTimeWorkRequest.Builder(SetChannelBrokerWorker.class)
-                .keepResultsForAtLeast(1, TimeUnit.SECONDS)
-                .addTag("REQUEST")
-                .setInputData(data)
-                .build();
-
         workManager = WorkManager.getInstance(this);
+
+        failed_attempts = 0;
     }
 /*
     public void runUser(){
@@ -72,8 +69,6 @@ public class newChannel extends AppCompatActivity {
 
     public void runUser() {
 
-        Log.d("RUN USER", "CALLED");
-        /*
         Data data = new Data.Builder()
                             .putString("ChannelName", channelName.getText().toString())
                             .build();
@@ -83,42 +78,35 @@ public class newChannel extends AppCompatActivity {
                 .setInputData(data)
                 .build();
 
-*/
+        String uniqueWorkName = "Connect to Broker_" + Integer.toString(failed_attempts);
+        Log.d("WORK", uniqueWorkName);
+        failed_attempts += 1;
 
         Toast.makeText(getApplicationContext(), "Starting worker...", Toast.LENGTH_SHORT)
                 .show();
 
-        workManager.enqueueUniqueWork("Connect to Broker",
-                        ExistingWorkPolicy.REPLACE, oneTimeRequest);
+        workManager.enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.APPEND_OR_REPLACE, oneTimeRequest);
 
         workManager.getWorkInfoByIdLiveData(oneTimeRequest.getId())
                 .observe(this, workInfo -> {
-                    Log.d("State", workInfo.getState().name());
-                    if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
 
-                        Intent intent = new Intent(this, runUser.class);
-                        startActivity(intent);
-                        finish();
-
-                    } else if (workInfo.getState() == WorkInfo.State.FAILED) {
-                        String error = workInfo.getOutputData().getString("ERROR");
-                        if (error.equals("EXCEPTION")) {
+                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        Log.d("STATE", "SUCCEEDED");
+                        Log.d("NAME", channelName.getText().toString());
+                        boolean unique = workInfo.getOutputData().getBoolean("UNIQUE", true);
+                        if (!unique) {
                             Toast.makeText(getApplicationContext(),
-                                    "Something wrong happened" +
-                                            "Try again.", Toast.LENGTH_SHORT).show();
-                        }else {
-                            Toast.makeText(getApplicationContext(),
-                                    "Channel name already exists." +
-                                            "Try again.", Toast.LENGTH_SHORT).show();
+                                    "Channel name already exists.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Intent intent = new Intent(this, runUser.class);
+                            startActivity(intent);
+                            finish();
                         }
-                        Log.d("Status", "Status failed");
-
+                    } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                        Log.d("STATE", "FAILED");
                     }
 
                 });
-
-        Log.d("RUN USER", "STOPPED");
-
 
     }
 }

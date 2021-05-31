@@ -29,6 +29,7 @@ public class SearchActivity extends AppCompatActivity {
     Button subscribeButton;
     SharedPreferences sharedPreferences;
     TextView relatedTopic;
+    int failed_attempts;
 
     private static final int REQUEST_PERMISSION_CODE = 1;
 
@@ -60,6 +61,8 @@ public class SearchActivity extends AppCompatActivity {
             subscribeButton.setText(R.string.subscribedText);
         }
 
+        failed_attempts = 0;
+
         // --------------- END OF MICHALIS CHANGES -------------- //
 
     }
@@ -77,9 +80,11 @@ public class SearchActivity extends AppCompatActivity {
                 .setInputData(data)
                 .build();
 
+        String uniqueWorkName = "Subscription" + Integer.toString(failed_attempts);
+        failed_attempts += 1;
+
         WorkManager.getInstance(this)
-                .enqueueUniqueWork("Subscription",
-                        ExistingWorkPolicy.REPLACE, subscriptionRequest);
+                .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, subscriptionRequest);
 
         if (button.getText().equals("SUBSCRIBE")) {
 

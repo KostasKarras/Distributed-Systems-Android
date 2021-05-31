@@ -25,7 +25,7 @@ public class UserWorker extends Worker {
         SocketAddress socketAddress;
 
         try {
-            TimeUnit.SECONDS.sleep(3);
+            TimeUnit.SECONDS.sleep(1);
             action = getInputData().getString("ACTION");
             if (action == null) return Result.failure();
 
