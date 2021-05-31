@@ -30,10 +30,10 @@ public class newChannel extends AppCompatActivity {
     EditText channelName;
     Button submitButton;
     SharedPreferences sharedPreferences;
+
     OneTimeWorkRequest oneTimeRequest;
     WorkManager workManager;
     Data data;
-
     int failed_attempts;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class newChannel extends AppCompatActivity {
 
     public void runUser() {
 
-        Data data = new Data.Builder()
+        data = new Data.Builder()
                             .putString("ChannelName", channelName.getText().toString())
                             .build();
 
