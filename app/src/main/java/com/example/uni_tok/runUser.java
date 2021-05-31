@@ -51,19 +51,13 @@ public class runUser extends AppCompatActivity {
 
         search_bar = (EditText)findViewById(R.id.search_bar);
 
-/*
-        // ---------------- MICHALIS TEST CODE ------------------- //
         OneTimeWorkRequest oneTimeRequest = new OneTimeWorkRequest.Builder(ServerWorker.class)
                 .build();
 
         WorkManager.getInstance(this)
-                .enqueueUniqueWork("Test server thread",
+                .enqueueUniqueWork("Handle Incoming Requests",
                         ExistingWorkPolicy.KEEP, oneTimeRequest);
 
-
-        // ---------------- END OF MICHALIS TEST CODE ------------------- //
-
- */
 
     }
 

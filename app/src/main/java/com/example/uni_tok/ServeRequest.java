@@ -7,7 +7,9 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
-public class ServeRequest {private Socket socket;
+public class ServeRequest extends Thread {
+
+    private Socket socket;
     private ObjectInputStream objectInputStream;
     private ObjectOutputStream objectOutputStream;
 
@@ -71,7 +73,4 @@ public class ServeRequest {private Socket socket;
             }
         }
     }
-
-
-
 }

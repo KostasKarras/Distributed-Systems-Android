@@ -125,7 +125,7 @@ public class AppNodeImpl {
 
     // --------------- DIMITRIS CHANGES -------------- //
 
-    public void handleRequest() {
+    public static void handleRequest() {
         try {
             while(true) {
                 Socket connectionSocket = serverSocket.accept();
@@ -169,7 +169,7 @@ public class AppNodeImpl {
         }
 
 
-        new RequestHandler(serverSocket).start();
+       // new RequestHandler(serverSocket).start();
 
         runUser();
 
@@ -652,7 +652,7 @@ public class AppNodeImpl {
         return channel.getChannelVideoNamesByHashtag(hashtag);
     }
 
-
+/*
     //CHANGES HAVE BEEN MADE
     class RequestHandler extends Thread {
 
@@ -671,7 +671,7 @@ public class AppNodeImpl {
                     new ServeRequest(connectionSocket).start();
                 }
             } catch(IOException e) {
-                /* Crash the server if IO fails. Something bad has happened. */
+                //Crash the server if IO fails. Something bad has happened.
                 throw new RuntimeException("Could not create ServerSocket ", e);
             } finally {
                 try {
@@ -682,7 +682,8 @@ public class AppNodeImpl {
             }
         }
     }
-
+    */
+/*
     class ServeRequest extends Thread {
 
         private Socket socket;
@@ -748,7 +749,7 @@ public class AppNodeImpl {
             }
         }
     }
-
+*/
     public void runUser() {
         //BUILD INTERFACE
         Scanner in = new Scanner(System.in);
