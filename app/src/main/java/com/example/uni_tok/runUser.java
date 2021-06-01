@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,9 +22,12 @@ import androidx.viewpager.widget.ViewPager;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import org.w3c.dom.Text;
+
+import java.util.HashMap;
 
 public class runUser extends AppCompatActivity {
 
@@ -74,7 +78,9 @@ public class runUser extends AppCompatActivity {
 
     public void searchActivity(View v) {
 
+        String topic = search_bar.getText().toString();
         String action = "TOPIC VIDEO LIST";
+        Intent intent = new Intent(this, SearchActivity.class);
 
         Data data = new Data.Builder()
                 .putString("TOPIC", search_bar.getText().toString())
@@ -91,14 +97,29 @@ public class runUser extends AppCompatActivity {
         WorkManager.getInstance(this)
                 .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, topicRequest);
 
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(topicRequest.getId())
+                .observe(this, workInfo -> {
+
+                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        Log.d("STATE", "SUCCEEDED");
+                        //TODO : Remove next four lines
+                        HashMap<ChannelKey, String>  searchVideoList = AppNodeImpl.getSearchTopicVideoList();
+                        for (ChannelKey item : searchVideoList.keySet()) {
+                            Log.d("ITEM",  searchVideoList.get(item));
+                        }
+                        startActivity(intent);
+                    } else if(workInfo.getState() == WorkInfo.State.FAILED) {
+                        Log.d("STATE", "FAILED");
+                        Toast.makeText(getApplicationContext(), "Error in fetching results..",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
         //STORE SEARCH TOPIC
-        String topic = search_bar.getText().toString();
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("searchKey", topic );
         editor.apply();
 
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
     }
 
     public void uploadVideoActivity(View v) {

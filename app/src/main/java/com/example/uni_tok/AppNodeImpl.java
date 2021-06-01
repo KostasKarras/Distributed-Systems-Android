@@ -49,6 +49,11 @@ public class AppNodeImpl {
     private static ArrayList<String> subscribedToChannels = new ArrayList<>();
     private static ArrayList<String> subscribedToHashtags = new ArrayList<>();
 
+    // --------------- MICHALIS CHANGES -------------- //
+    private static HashMap<ChannelKey, String> searchVideoList = new HashMap<>();
+    // --------------- END OF MICHALIS CHANGES -------------- //
+
+
     public static void main(String[] args) {
 
         new AppNodeImpl().initialize(4960);
@@ -113,9 +118,11 @@ public class AppNodeImpl {
 
     }
 
-    public static HashMap<ChannelKey, String> getTopicVideoList(String topic) {
+    public static boolean setSearchTopicVideoList(String topic) {
 
-        HashMap<ChannelKey, String> videoList = new HashMap<>();
+        searchVideoList.clear();
+
+        boolean fetched_successfully = false;
         //Get right broker
         SocketAddress socketAddress = hashTopic(topic);
 
@@ -136,16 +143,21 @@ public class AppNodeImpl {
             objectOutputStream.flush();
 
             //Read videoList
-            videoList = (HashMap<ChannelKey, String>) objectInputStream.readObject();
+            searchVideoList = (HashMap<ChannelKey, String>) objectInputStream.readObject();
+
+            fetched_successfully = true;
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
-            videoList = new HashMap<>();
         } finally {
             disconnect();
         }
 
-        return videoList;
+        return fetched_successfully;
+    }
+
+    public static HashMap<ChannelKey, String> getSearchTopicVideoList() {
+        return searchVideoList;
     }
 
     public static ArrayList<String> getSubscribedToChannels() {

@@ -59,16 +59,11 @@ public class UserWorker extends Worker {
                     break;
 
                 case "TOPIC VIDEO LIST" :
-                    HashMap<ChannelKey, String> videoList;
+                    boolean fetched_successfully;
                     topic = getInputData().getString("TOPIC");
                     if (topic != null) {
-                        //videoList = AppNodeImpl.getTopicVideoList(topic);
-                        //TEST CODE
-                        HashMap<Integer, String> testMap = new HashMap<>();
-                        testMap.put(10, "John");
-                        testMap.put(20, "Michael");
-                        testMap.put(30, "George");
-                        //
+                        fetched_successfully = AppNodeImpl.setSearchTopicVideoList(topic);
+                        if (fetched_successfully) return Result.success();
                     }
                     break;
             }
