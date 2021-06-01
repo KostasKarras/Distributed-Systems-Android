@@ -113,6 +113,41 @@ public class AppNodeImpl {
 
     }
 
+    public static HashMap<ChannelKey, String> getTopicVideoList(String topic) {
+
+        HashMap<ChannelKey, String> videoList = new HashMap<>();
+        //Get right broker
+        SocketAddress socketAddress = hashTopic(topic);
+
+        //Connect to that broker
+        connect(socketAddress);
+
+        try {
+            //Write option
+            objectOutputStream.writeObject(2);
+            objectOutputStream.flush();
+
+            //Write channel name or hashtag
+            objectOutputStream.writeObject(topic);
+            objectOutputStream.flush();
+
+            //Write this user's channel name
+            objectOutputStream.writeObject(channel.getChannelName());
+            objectOutputStream.flush();
+
+            //Read videoList
+            videoList = (HashMap<ChannelKey, String>) objectInputStream.readObject();
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            videoList = new HashMap<>();
+        } finally {
+            disconnect();
+        }
+
+        return videoList;
+    }
+
     public static ArrayList<String> getSubscribedToChannels() {
         return subscribedToChannels;
     }

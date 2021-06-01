@@ -1,13 +1,19 @@
 package com.example.uni_tok;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.shapes.PathShape;
 import android.util.Log;
+import android.webkit.HttpAuthHandler;
 
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import java.lang.reflect.Type;
 import java.net.SocketAddress;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class UserWorker extends Worker {
@@ -38,8 +44,9 @@ public class UserWorker extends Worker {
                         socketAddress = AppNodeImpl.hashTopic(topic);
                         successful_subscription = AppNodeImpl.register(socketAddress, topic);
                         if (successful_subscription) return Result.success();
-                        break;
                     }
+                    break;
+
 
                 case "SUBSCRIBED":
                     boolean successful_unsubscription;
@@ -48,8 +55,22 @@ public class UserWorker extends Worker {
                         socketAddress = AppNodeImpl.hashTopic(topic);
                         successful_unsubscription = AppNodeImpl.unregister(socketAddress, topic);
                         if (successful_unsubscription) return Result.success();
-                        break;
                     }
+                    break;
+
+                case "TOPIC VIDEO LIST" :
+                    HashMap<ChannelKey, String> videoList;
+                    topic = getInputData().getString("TOPIC");
+                    if (topic != null) {
+                        //videoList = AppNodeImpl.getTopicVideoList(topic);
+                        //TEST CODE
+                        HashMap<Integer, String> testMap = new HashMap<>();
+                        testMap.put(10, "John");
+                        testMap.put(20, "Michael");
+                        testMap.put(30, "George");
+                        //
+                    }
+                    break;
             }
 
         }

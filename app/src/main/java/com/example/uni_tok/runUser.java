@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
+import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
@@ -39,6 +40,7 @@ public class runUser extends AppCompatActivity {
     EditText search_bar;
 
     SharedPreferences sharedPreferences;
+    int failed_attempts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,7 @@ public class runUser extends AppCompatActivity {
                 .enqueueUniqueWork("Handle Incoming Requests",
                         ExistingWorkPolicy.KEEP, oneTimeRequest);
 
-
+        failed_attempts = 0;
     }
 
     public void channelActivity(View v) {
@@ -71,6 +73,23 @@ public class runUser extends AppCompatActivity {
     }
 
     public void searchActivity(View v) {
+
+        String action = "TOPIC VIDEO LIST";
+
+        Data data = new Data.Builder()
+                .putString("TOPIC", search_bar.getText().toString())
+                .putString("ACTION", action)
+                .build();
+
+        OneTimeWorkRequest topicRequest = new OneTimeWorkRequest.Builder(UserWorker.class)
+                                                                .setInputData(data)
+                                                                .build();
+
+        String uniqueWorkName = "Topic"+ Integer.toString(failed_attempts);
+        failed_attempts += 1;
+
+        WorkManager.getInstance(this)
+                .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, topicRequest);
 
         //STORE SEARCH TOPIC
         String topic = search_bar.getText().toString();
