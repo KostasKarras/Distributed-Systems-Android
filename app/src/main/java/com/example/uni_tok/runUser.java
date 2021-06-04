@@ -70,9 +70,6 @@ public class runUser extends AppCompatActivity {
     public void channelActivity(View v) {
         Intent intent = new Intent(this, ChannelActivity.class);
 
-        //To check the activity in the channel
-        intent.putExtra("upload", false);
-
         startActivity(intent);
     }
 

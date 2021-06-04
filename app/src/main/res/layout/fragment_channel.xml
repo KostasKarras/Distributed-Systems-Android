@@ -69,36 +69,12 @@
 
     <ListView
         android:id="@+id/listView"
-        android:layout_width="405dp"
-        android:layout_height="61dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/hashtags" />
-
-    <TextView
-        android:id="@+id/videoTitle"
-        android:layout_width="match_parent"
-        android:layout_height="57dp"
-        android:text="Video Title"
-        android:textSize="20sp"
+        android:layout_width="410dp"
+        android:layout_height="409dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/include_bottom_app_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ProfileLine" />
-        android:gravity="center_horizontal"
-        android:layout_gravity="center_horizontal" />
-
-    <TextView
-        android:id="@+id/hashtags"
-        android:layout_width="match_parent"
-        android:layout_height="57dp"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:text="Hashtags"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/videoTitle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

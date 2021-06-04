@@ -180,6 +180,22 @@ public class AppNodeImpl {
 
     // --------------- END OF MICHALIS CHANGES -------------- //
 
+    public static boolean Upload(String path, ArrayList<String> associatedHashtags, String videoName){
+        VideoFile videoFile = new VideoFile(path, associatedHashtags, videoName);
+        HashMap<String, String> notificationHashtags = (AppNodeImpl.getChannel()).addVideoFile(videoFile);
+
+        if (!notificationHashtags.isEmpty()) {
+            for (Map.Entry<String, String> item : notificationHashtags.entrySet())
+                AppNodeImpl.notifyBrokersForHashTags(item.getKey(), item.getValue());
+        }
+
+        ChannelKey channelKey = new ChannelKey((AppNodeImpl.getChannel()).getChannelName(),
+                videoFile.getVideoID());
+        AppNodeImpl.notifyBrokersForChanges(channelKey, associatedHashtags, videoName, true);
+
+        return true;
+    }
+
     // --------------- DIMITRIS CHANGES -------------- //
 
     public static void handleRequest() {

@@ -13,7 +13,10 @@ import androidx.work.WorkerParameters;
 
 import java.lang.reflect.Type;
 import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class UserWorker extends Worker {
@@ -28,6 +31,9 @@ public class UserWorker extends Worker {
 
         String topic;
         String action;
+        String videoName;
+        String path;
+        String [] hashtags;
         SocketAddress socketAddress;
 
         try {
@@ -64,6 +70,18 @@ public class UserWorker extends Worker {
                     if (topic != null) {
                         fetched_successfully = AppNodeImpl.setSearchTopicVideoList(topic);
                         if (fetched_successfully) return Result.success();
+                    }
+                    break;
+
+                case "Upload":
+                    path = getInputData().getString("path");
+                    videoName = getInputData().getString("videoName");
+                    hashtags = getInputData().getStringArray("associatedHashtags");
+                    ArrayList<String> associatedHashtags = new ArrayList<>();
+                    if (hashtags != null) {
+                        Collections.addAll(associatedHashtags, hashtags);
+                        boolean successful_upload = AppNodeImpl.Upload(path, associatedHashtags, videoName);
+                        if (successful_upload) return Result.success();
                     }
                     break;
             }
