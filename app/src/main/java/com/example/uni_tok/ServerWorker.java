@@ -40,6 +40,8 @@ public class ServerWorker extends Worker{
         }
         */
 
+        AppNodeImpl.init(4960);
+
         AppNodeImpl.handleRequest();
 
         return Result.success();
