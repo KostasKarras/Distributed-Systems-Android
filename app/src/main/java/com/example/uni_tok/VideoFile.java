@@ -2,6 +2,8 @@ package com.example.uni_tok;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class VideoFile {
@@ -54,7 +56,6 @@ public class VideoFile {
     public String getVideoName() {
         return this.videoName;
     }
-
 
     /** Setters */
     public void addHashtag(String hashtag) {

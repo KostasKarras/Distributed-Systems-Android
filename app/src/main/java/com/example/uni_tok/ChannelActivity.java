@@ -12,11 +12,17 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -29,6 +35,8 @@ public class ChannelActivity extends AppCompatActivity {
     TextView videoTitle;
     TextView videoHashtags;
     SharedPreferences sharedPreferences;
+
+    int failed_attempts = 0;
 
     private static final int REQUEST_PERMISSION_CODE = 1;
 
@@ -73,14 +81,43 @@ public class ChannelActivity extends AppCompatActivity {
 
     public void searchActivity(View v) {
 
-        //STORE SEARCH TOPIC
         String topic = search_bar.getText().toString();
+        String action = "TOPIC VIDEO LIST";
+        Intent intent = new Intent(this, SearchActivity.class);
+
+        Data data = new Data.Builder()
+                .putString("TOPIC", search_bar.getText().toString())
+                .putString("ACTION", action)
+                .build();
+
+        OneTimeWorkRequest topicRequest = new OneTimeWorkRequest.Builder(UserWorker.class)
+                .setInputData(data)
+                .build();
+
+        String uniqueWorkName = "Topic_from_Channel"+ Integer.toString(failed_attempts);
+        failed_attempts += 1;
+
+        WorkManager.getInstance(this)
+                .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, topicRequest);
+
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(topicRequest.getId())
+                .observe(this, workInfo -> {
+
+                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        Log.d("STATE", "SUCCEEDED");
+                        startActivity(intent);
+                    } else if(workInfo.getState() == WorkInfo.State.FAILED) {
+                        Log.d("STATE", "FAILED");
+                        Toast.makeText(getApplicationContext(), "Error in fetching results..",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        //STORE SEARCH TOPIC
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("searchKey", topic );
         editor.apply();
 
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
     }
 
     public void uploadVideoActivity(View v) {

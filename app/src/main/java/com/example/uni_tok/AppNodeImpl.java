@@ -24,6 +24,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -51,6 +52,7 @@ public class AppNodeImpl {
 
     // --------------- MICHALIS CHANGES -------------- //
     private static HashMap<ChannelKey, String> searchVideoList = new HashMap<>();
+    private static LinkedHashMap<ChannelKey, String> homePageVideoList  = new LinkedHashMap<>();
     // --------------- END OF MICHALIS CHANGES -------------- //
 
 
@@ -154,6 +156,14 @@ public class AppNodeImpl {
         }
 
         return fetched_successfully;
+    }
+
+    /**
+     * This page uploads to Home Page a video every time a
+     * channel or hashtag we are subscribed to uploads a video
+     */
+    public synchronized static void refreshHomePage(ChannelKey key, String title) {
+        homePageVideoList.put(key, title);
     }
 
     public static HashMap<ChannelKey, String> getSearchTopicVideoList() {
@@ -590,6 +600,7 @@ public class AppNodeImpl {
         } finally {
             disconnect();
         }
+
         return successful_subscription;
     }
 
@@ -746,7 +757,7 @@ public class AppNodeImpl {
                 e.printStackTrace();
             }
         }
-
+6
         public void run() {
 
             try{

@@ -102,11 +102,6 @@ public class runUser extends AppCompatActivity {
 
                     if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                         Log.d("STATE", "SUCCEEDED");
-                        //TODO : Remove next four lines
-                        HashMap<ChannelKey, String>  searchVideoList = AppNodeImpl.getSearchTopicVideoList();
-                        for (ChannelKey item : searchVideoList.keySet()) {
-                            Log.d("ITEM",  searchVideoList.get(item));
-                        }
                         startActivity(intent);
                     } else if(workInfo.getState() == WorkInfo.State.FAILED) {
                         Log.d("STATE", "FAILED");

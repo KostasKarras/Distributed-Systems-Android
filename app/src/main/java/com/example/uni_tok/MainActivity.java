@@ -16,6 +16,7 @@ import androidx.work.WorkRequest;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
@@ -26,6 +27,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.LinkedHashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -45,6 +47,13 @@ public class MainActivity extends AppCompatActivity {
 
         failed_attempts = 0;
 
+        LinkedHashMap<Integer, String> test= new LinkedHashMap<>();
+        test.put(10, "Michael");
+        test.put(20, "George");
+        test.put(30, "Grace");
+        for (int item : test.keySet()) {
+            Log.d("ITEM", test.get(item));
+        }
     }
 /*
     public void newChannel(){

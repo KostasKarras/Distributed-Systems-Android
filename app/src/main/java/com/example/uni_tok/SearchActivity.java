@@ -23,6 +23,8 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import java.util.HashMap;
+
 public class SearchActivity extends AppCompatActivity {
 
     EditText search_bar;
@@ -137,14 +139,43 @@ public class SearchActivity extends AppCompatActivity {
 
     public void searchActivity(View v) {
 
-        //STORE SEARCH TOPIC
         String topic = search_bar.getText().toString();
+        String action = "TOPIC VIDEO LIST";
+        Intent intent = new Intent(this, SearchActivity.class);
+
+        Data data = new Data.Builder()
+                .putString("TOPIC", search_bar.getText().toString())
+                .putString("ACTION", action)
+                .build();
+
+        OneTimeWorkRequest topicRequest = new OneTimeWorkRequest.Builder(UserWorker.class)
+                .setInputData(data)
+                .build();
+
+        String uniqueWorkName = "Topic_from_channel"+ Integer.toString(failed_attempts);
+        failed_attempts += 1;
+
+        WorkManager.getInstance(this)
+                .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, topicRequest);
+
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(topicRequest.getId())
+                .observe(this, workInfo -> {
+
+                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        Log.d("STATE", "SUCCEEDED");
+                        startActivity(intent);
+                    } else if(workInfo.getState() == WorkInfo.State.FAILED) {
+                        Log.d("STATE", "FAILED");
+                        Toast.makeText(getApplicationContext(), "Error in fetching results..",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        //STORE SEARCH TOPIC
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("searchKey", topic );
         editor.apply();
 
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
     }
 
     public void uploadVideoActivity(View v) {
