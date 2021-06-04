@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        AppNodeImpl.init(4960);
+
         IP = (EditText) findViewById(R.id.AddressKeeperIP);
 
         submitButton = (Button) findViewById(R.id.AddressKeeperSubmit);
