@@ -39,9 +39,6 @@ public class ChannelActivity extends AppCompatActivity {
     EditText search_bar;
     VideoAdapter arrayAdapter;
     TextView channelName;
-    TextView videoTitle;
-    TextView videoHashtags;
-    ImageView imageView;
     SharedPreferences sharedPreferences;
 
     int failed_attempts = 0;

@@ -51,7 +51,14 @@ public class VideoAdapter extends BaseAdapter {
 //                MediaStore.Video.Thumbnails.MICRO_KIND);
 
         videoName.setText(videoList.get(position).getVideoName());
-        hashtags.setText(videoList.get(position).getAssociatedHashtags().toString());
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String hashtag : videoList.get(position).getAssociatedHashtags())
+            stringBuilder.append(hashtag + ", ");
+        if (stringBuilder.length() != 0)
+            stringBuilder.deleteCharAt(stringBuilder.length() - 2);
+        hashtags.setText(stringBuilder);
+
         imageView.setImageBitmap(thumbnail);
 
 

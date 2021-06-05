@@ -9,7 +9,7 @@ public class Channel {
     private String channelName;
     private ArrayList<String> hashtagsPublished;
     private HashMap<String, ArrayList<VideoFile>> hashtagVideoFilesMap;
-    private int counterVideoID;
+    private static int counterVideoID;
     private static HashMap<Integer, VideoFile> ID_VideoFileMap;
     private HashMap<ChannelKey, String> ID_VideoNameMap;
 
@@ -200,7 +200,9 @@ public class Channel {
         return temp;
     }
 
-
+    public static int getVideoID(){
+        return counterVideoID;
+    }
 
     /** Setters */
 //    public void addHashTag(String hashtag) {
