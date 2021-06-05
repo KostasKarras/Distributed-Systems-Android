@@ -13,16 +13,21 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.viewpager.widget.ViewPager;
+import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
 import org.w3c.dom.Text;
+
+import java.util.HashMap;
 
 public class runUser extends AppCompatActivity {
 
@@ -39,41 +44,7 @@ public class runUser extends AppCompatActivity {
     EditText search_bar;
 
     SharedPreferences sharedPreferences;
-
-    /*
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.home_page_activity);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
-        tabLayout.addTab(tabLayout.newTab().setText("Videos"));
-        tabLayout.addTab(tabLayout.newTab().setText("Search"));
-        tabLayout.addTab(tabLayout.newTab().setText("Upload"));
-        tabLayout.addTab(tabLayout.newTab().setText("Channel"));
-
-        viewPager = (ViewPager)findViewById(R.id.viewPager);
-
-        MyAdapter adapter = new MyAdapter(this,getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
-
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });
-    }
-   */
+    int failed_attempts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,24 +57,6 @@ public class runUser extends AppCompatActivity {
 
         search_bar = (EditText)findViewById(R.id.search_bar);
 
-        /*
-
-        profile_button = (ImageButton)findViewById(R.id.profileButton);
-        exit_button = (ImageButton)findViewById(R.id.exitButton);
-        home_button = (ImageButton)findViewById(R.id.homeButton);
-        search_button = (ImageButton)findViewById(R.id.search_button);
-        upload_button = (ImageButton)findViewById(R.id.uploadButton);
-
-        /*
-        profile_button.setOnClickListener(this);
-        exit_button.setOnClickListener(this);
-        home_button.setOnClickListener(this);
-        search_button.setOnClickListener(this);
-        upload_button.setOnClickListener(this);
-
-         */
-
-        // ---------------- MICHALIS TEST CODE ------------------- //
         OneTimeWorkRequest oneTimeRequest = new OneTimeWorkRequest.Builder(ServerWorker.class)
                 .build();
 
@@ -111,56 +64,54 @@ public class runUser extends AppCompatActivity {
                 .enqueueUniqueWork("Handle Incoming Requests",
                         ExistingWorkPolicy.KEEP, oneTimeRequest);
 
-
-        // ---------------- END OF MICHALIS TEST CODE ------------------- //
-
+        failed_attempts = 0;
     }
-
-    /*
-    @Override
-    public void onClick(View v) {
-        Intent intent;
-        switch (v.getId()) {
-            case R.id.profileButton:
-                intent = new Intent(this, ChannelActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.exitButton:
-                break;
-            case R.id.homeButton:
-                break;
-            case R.id.search_button:
-                String topic = search_bar.getText().toString();
-                intent = new Intent(this, SearchActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.uploadButton:
-                break;
-        }
-
-    }
-
-     */
 
     public void channelActivity(View v) {
         Intent intent = new Intent(this, ChannelActivity.class);
-
-        //To check the activity in the channel
-        intent.putExtra("upload", false);
 
         startActivity(intent);
     }
 
     public void searchActivity(View v) {
 
-        //STORE SEARCH TOPIC
         String topic = search_bar.getText().toString();
+        String action = "TOPIC VIDEO LIST";
+        Intent intent = new Intent(this, SearchActivity.class);
+
+        Data data = new Data.Builder()
+                .putString("TOPIC", search_bar.getText().toString())
+                .putString("ACTION", action)
+                .build();
+
+        OneTimeWorkRequest topicRequest = new OneTimeWorkRequest.Builder(UserWorker.class)
+                                                                .setInputData(data)
+                                                                .build();
+
+        String uniqueWorkName = "Topic"+ Integer.toString(failed_attempts);
+        failed_attempts += 1;
+
+        WorkManager.getInstance(this)
+                .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, topicRequest);
+
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(topicRequest.getId())
+                .observe(this, workInfo -> {
+
+                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        Log.d("STATE", "SUCCEEDED");
+                        startActivity(intent);
+                    } else if(workInfo.getState() == WorkInfo.State.FAILED) {
+                        Log.d("STATE", "FAILED");
+                        Toast.makeText(getApplicationContext(), "Error in fetching results..",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        //STORE SEARCH TOPIC
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("searchKey", topic );
         editor.apply();
 
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
     }
 
     public void uploadVideoActivity(View v) {

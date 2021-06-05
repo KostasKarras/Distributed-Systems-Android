@@ -28,7 +28,7 @@ public class FirstConnectionWorker extends Worker {
     @Override
     public Result doWork() {
         try {
-            TimeUnit.SECONDS.sleep(3);
+            TimeUnit.SECONDS.sleep(1);
 
             AppNodeImpl.init(4960);
             

@@ -13,13 +13,6 @@ import androidx.work.WorkerParameters;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.HashMap;
-import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 public class ServerWorker extends Worker{
@@ -43,13 +36,11 @@ public class ServerWorker extends Worker{
                         Toast.makeText(getApplicationContext(), "MESSAGE PRINT",
                                 Toast.LENGTH_SHORT).show();
                     }
-                });
-                TimeUnit.SECONDS.sleep(5);
-            }
-        } catch (InterruptedException ie) {
-            Log.d("IE", ie.getMessage());
+@@ -44,6 +51,7 @@
         }
         */
+
+        AppNodeImpl.init(4960);
 
         AppNodeImpl.handleRequest();
 

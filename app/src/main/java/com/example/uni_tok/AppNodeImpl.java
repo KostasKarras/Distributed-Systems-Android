@@ -24,6 +24,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
@@ -48,6 +49,12 @@ public class AppNodeImpl {
 
     private static ArrayList<String> subscribedToChannels = new ArrayList<>();
     private static ArrayList<String> subscribedToHashtags = new ArrayList<>();
+
+    // --------------- MICHALIS CHANGES -------------- //
+    private static HashMap<ChannelKey, String> searchVideoList = new HashMap<>();
+    private static LinkedHashMap<ChannelKey, String> homePageVideoList  = new LinkedHashMap<>();
+    // --------------- END OF MICHALIS CHANGES -------------- //
+
 
     public static void main(String[] args) {
 
@@ -113,8 +120,81 @@ public class AppNodeImpl {
 
     }
 
+    public static boolean setSearchTopicVideoList(String topic) {
+
+        searchVideoList.clear();
+
+        boolean fetched_successfully = false;
+        //Get right broker
+        SocketAddress socketAddress = hashTopic(topic);
+
+        //Connect to that broker
+        connect(socketAddress);
+
+        try {
+            //Write option
+            objectOutputStream.writeObject(2);
+            objectOutputStream.flush();
+
+            //Write channel name or hashtag
+            objectOutputStream.writeObject(topic);
+            objectOutputStream.flush();
+
+            //Write this user's channel name
+            objectOutputStream.writeObject(channel.getChannelName());
+            objectOutputStream.flush();
+
+            //Read videoList
+            searchVideoList = (HashMap<ChannelKey, String>) objectInputStream.readObject();
+
+            fetched_successfully = true;
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            disconnect();
+        }
+
+        return fetched_successfully;
+    }
+
+    /**
+     * This page uploads to Home Page a video every time a
+     * channel or hashtag we are subscribed to uploads a video
+     */
+    public synchronized static void refreshHomePage(ChannelKey key, String title) {
+        homePageVideoList.put(key, title);
+    }
+
+    public static HashMap<ChannelKey, String> getSearchTopicVideoList() {
+        return searchVideoList;
+    }
+
+    public static ArrayList<String> getSubscribedToChannels() {
+        return subscribedToChannels;
+    }
+
+    public static ArrayList<String> getSubscribedToHashtags() {
+        return subscribedToHashtags;
+    }
+
     // --------------- END OF MICHALIS CHANGES -------------- //
 
+    public static boolean Upload(String path, ArrayList<String> associatedHashtags, String videoName){
+        VideoFile videoFile = new VideoFile(path, associatedHashtags, videoName);
+        HashMap<String, String> notificationHashtags = (AppNodeImpl.getChannel()).addVideoFile(videoFile);
+
+        if (!notificationHashtags.isEmpty()) {
+            for (Map.Entry<String, String> item : notificationHashtags.entrySet())
+                AppNodeImpl.notifyBrokersForHashTags(item.getKey(), item.getValue());
+        }
+
+        ChannelKey channelKey = new ChannelKey((AppNodeImpl.getChannel()).getChannelName(),
+                videoFile.getVideoID());
+        AppNodeImpl.notifyBrokersForChanges(channelKey, associatedHashtags, videoName, true);
+
+        return true;
+    }
 
     // --------------- DIMITRIS CHANGES -------------- //
 
@@ -135,8 +215,6 @@ public class AppNodeImpl {
             }
         }
     }
-
-
 
     // --------------- END OF DIMITRIS CHANGES -------------- //
 
@@ -164,13 +242,13 @@ public class AppNodeImpl {
         }
 
 
-        //new RequestHandler(serverSocket).start();
+       // new RequestHandler(serverSocket).start();
 
         runUser();
 
     }
 
-    public void addHashTag(VideoFile video) {
+    public static void addHashTag(VideoFile video) {
 
         Scanner in3 = new Scanner(System.in);
         String hashtag;
@@ -205,7 +283,7 @@ public class AppNodeImpl {
         }
     }
 
-    public void removeHashTag(VideoFile video) {
+    public static void removeHashTag(VideoFile video) {
 
         Scanner in4 = new Scanner(System.in);
         String hashtag;
@@ -294,7 +372,7 @@ public class AppNodeImpl {
 //
 //    }
 
-    public void notifyBrokersForHashTags(String hashtag, String action) {
+    public static void notifyBrokersForHashTags(String hashtag, String action) {
         SocketAddress socketAddress = hashTopic(hashtag);
         connect(socketAddress);
         try {
@@ -316,7 +394,7 @@ public class AppNodeImpl {
         }
     }
 
-    public void notifyBrokersForChanges(ChannelKey channelKey, ArrayList<String> hashtags, String title, boolean action) {
+    public static void notifyBrokersForChanges(ChannelKey channelKey, ArrayList<String> hashtags, String title, boolean action) {
 
         if (!hashtags.isEmpty()) {
             for (String hashtag : hashtags) {
@@ -443,7 +521,7 @@ public class AppNodeImpl {
         }
     }
 
-    public void connect() {
+    public static void connect() {
 
         try {
             Scanner in5 = new Scanner(System.in);
@@ -503,9 +581,10 @@ public class AppNodeImpl {
 //    }
 
 
-    public void register(SocketAddress socketAddress, String topic) {
+    public static boolean register(SocketAddress socketAddress, String topic) {
 
         connect(socketAddress);
+        boolean successful_subscription = false;
 
         try {
             objectOutputStream.writeObject(1);
@@ -521,7 +600,7 @@ public class AppNodeImpl {
             objectOutputStream.flush();
 
             String response = (String) objectInputStream.readObject();
-            System.out.println(response);
+            Log.d("RESPONSE", response);
 
             if (response.contains("successfully")) {
                 if (topic.charAt(0) == '#') {
@@ -529,6 +608,7 @@ public class AppNodeImpl {
                 } else {
                     subscribedToChannels.add(topic);
                 }
+                successful_subscription = true;
             }
 
         } catch (IOException | ClassNotFoundException e) {
@@ -536,9 +616,13 @@ public class AppNodeImpl {
         } finally {
             disconnect();
         }
+
+        return successful_subscription;
     }
 
-    public void unregister(SocketAddress socketAddress, String topic) {
+    public static boolean unregister(SocketAddress socketAddress, String topic) {
+
+        boolean successful_unsubscription = false;
 
         try {
             connect(socketAddress);
@@ -553,18 +637,21 @@ public class AppNodeImpl {
             objectOutputStream.flush();
 
             if (topic.charAt(0) == '#'){
-                System.out.println("You unsubscribed from hashtag " + topic + " successfully.");
+                subscribedToHashtags.remove(topic);
             } else {
-                System.out.println("You unsubscribed from channel " + topic + " successfully.");
+                subscribedToChannels.remove(topic);
             }
+            successful_unsubscription = true;
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             disconnect();
         }
+
+        return successful_unsubscription;
     }
 
-    public void playData(HashMap<ChannelKey, String> videoList) {
+    public static void playData(HashMap<ChannelKey, String> videoList) {
 
         File nf = null;
         Scanner in2 = new Scanner(System.in);
@@ -639,103 +726,104 @@ public class AppNodeImpl {
         return channel.getChannelVideoNamesByHashtag(hashtag);
     }
 
+/*
+    //CHANGES HAVE BEEN MADE
+    class RequestHandler extends Thread {
 
-//    //CHANGES HAVE BEEN MADE
-//    class RequestHandler extends Thread {
-//
-//        public ServerSocket serverSocket;
-//        public Socket connectionSocket;
-//
-//        public RequestHandler(ServerSocket serverSocket) {
-//            this.serverSocket = serverSocket;
-//        }
-//
-//        public void run() {
-//
-//            try {
-//                while(true) {
-//                    connectionSocket = serverSocket.accept();
-//                    new ServeRequest(connectionSocket).start();
-//                }
-//            } catch(IOException e) {
-//                /* Crash the server if IO fails. Something bad has happened. */
-//                throw new RuntimeException("Could not create ServerSocket ", e);
-//            } finally {
-//                try {
-//                    serverSocket.close();
-//                } catch (IOException | NullPointerException ioException) {
-//                    ioException.printStackTrace();
-//                }
-//            }
-//        }
-//    }
-//
-//    class ServeRequest extends Thread {
-//
-//        private Socket socket;
-//        private ObjectInputStream objectInputStream;
-//        private ObjectOutputStream objectOutputStream;
-//
-//        ServeRequest(Socket s) {
-//            socket = s;
-//            try {
-//                objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-//                objectInputStream = new ObjectInputStream(socket.getInputStream());
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        public void run() {
-//
-//            try{
-//
-//                int option = (int) objectInputStream.readObject();
-//
-//                if (option == 1) { //Pull List
-//
-//                    //Choice between sending whole channel or files based on hashtag
-//                    String choice = (String) objectInputStream.readObject();
-//                    System.out.println(choice);
-//                    if (choice.equals("CHANNEL")) {
-//                        HashMap<ChannelKey, String> videoList = getChannelVideoMap();
-//                        objectOutputStream.writeObject(videoList);
-//                    }
-//                    else {
-//                        HashMap<ChannelKey, String> videoList = getHashtagVideoMap(choice);
-//                        objectOutputStream.writeObject(videoList);
-//                    }
-//
-//                } else if (option == 2) { //Pull Video
-//
-//                    ChannelKey channelKey = (ChannelKey) objectInputStream.readObject();
-//                    try {
-//                        push(channelKey.getVideoID(), objectInputStream, objectOutputStream);
-//                    } catch (NoSuchElementException nsee) {
-//                        objectOutputStream.writeObject(false);
-//                        objectOutputStream.flush();
-//                    }
-//
-//                } else if (option == 3) {
-//
-//                    String notificationMessage = (String) objectInputStream.readObject();
-//                    System.out.println(notificationMessage);
-//
-//                }
-//            } catch (IOException | ClassNotFoundException e) {
-//                e.printStackTrace();
-//            } finally {
-//                try {
-//                    objectInputStream.close();
-//                    objectOutputStream.close();
-//                    socket.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
+        public ServerSocket serverSocket;
+        public Socket connectionSocket;
 
+        public RequestHandler(ServerSocket serverSocket) {
+            this.serverSocket = serverSocket;
+        }
+
+        public void run() {
+
+            try {
+                while(true) {
+                    connectionSocket = serverSocket.accept();
+                    new ServeRequest(connectionSocket).start();
+                }
+            } catch(IOException e) {
+                //Crash the server if IO fails. Something bad has happened.
+                throw new RuntimeException("Could not create ServerSocket ", e);
+            } finally {
+                try {
+                    serverSocket.close();
+                } catch (IOException | NullPointerException ioException) {
+                    ioException.printStackTrace();
+                }
+            }
+        }
+    }
+    */
+/*
+    class ServeRequest extends Thread {
+
+        private Socket socket;
+        private ObjectInputStream objectInputStream;
+        private ObjectOutputStream objectOutputStream;
+
+        ServeRequest(Socket s) {
+            socket = s;
+            try {
+                objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                objectInputStream = new ObjectInputStream(socket.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+6
+        public void run() {
+
+            try{
+
+                int option = (int) objectInputStream.readObject();
+
+                if (option == 1) { //Pull List
+
+                    //Choice between sending whole channel or files based on hashtag
+                    String choice = (String) objectInputStream.readObject();
+                    System.out.println(choice);
+                    if (choice.equals("CHANNEL")) {
+                        HashMap<ChannelKey, String> videoList = getChannelVideoMap();
+                        objectOutputStream.writeObject(videoList);
+                    }
+                    else {
+                        HashMap<ChannelKey, String> videoList = getHashtagVideoMap(choice);
+                        objectOutputStream.writeObject(videoList);
+                    }
+
+                } else if (option == 2) { //Pull Video
+
+                    ChannelKey channelKey = (ChannelKey) objectInputStream.readObject();
+                    try {
+                        push(channelKey.getVideoID(), objectInputStream, objectOutputStream);
+                    } catch (NoSuchElementException nsee) {
+                        objectOutputStream.writeObject(false);
+                        objectOutputStream.flush();
+                    }
+
+                } else if (option == 3) {
+
+                    String notificationMessage = (String) objectInputStream.readObject();
+                    System.out.println(notificationMessage);
+
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    objectInputStream.close();
+                    objectOutputStream.close();
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+*/
     public void runUser() {
         //BUILD INTERFACE
         Scanner in = new Scanner(System.in);

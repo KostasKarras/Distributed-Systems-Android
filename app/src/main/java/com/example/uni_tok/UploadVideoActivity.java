@@ -30,7 +30,7 @@ public class UploadVideoActivity extends Activity {
     private VideoView videoView;
     private Button playButton;
     private MediaController media;
-    public ArrayList<Uri> videos = new ArrayList<Uri>();
+    private Uri video;
     private ArrayAdapter<String> arrayAdapter;
     private EditText search_bar;
 
@@ -61,9 +61,7 @@ public class UploadVideoActivity extends Activity {
             myVideo.setMediaController(media);
             media.setAnchorView(myVideo);
 
-            //add video in arraylist
-            videos.add(videoData);
-
+            video = videoData;
             //notify to change the list which is printed
 //            arrayAdapter.notifyDataSetChanged();
 
@@ -99,7 +97,7 @@ public class UploadVideoActivity extends Activity {
         Intent intent = new Intent(this, UploadActivity.class);
 
         Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("videos",(ArrayList<Uri>) videos);
+        bundle.putParcelable("video", video);
         intent.putExtras(bundle);
 
         startActivity(intent);

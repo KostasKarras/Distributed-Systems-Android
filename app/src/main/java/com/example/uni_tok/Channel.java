@@ -9,8 +9,8 @@ public class Channel {
     private String channelName;
     private ArrayList<String> hashtagsPublished;
     private HashMap<String, ArrayList<VideoFile>> hashtagVideoFilesMap;
-    private int counterVideoID;
-    private HashMap<Integer, VideoFile> ID_VideoFileMap;
+    private static int counterVideoID;
+    private static HashMap<Integer, VideoFile> ID_VideoFileMap;
     private HashMap<ChannelKey, String> ID_VideoNameMap;
 
     /** Constructors */
@@ -187,6 +187,21 @@ public class Channel {
             channelString += String.valueOf(id) + ": " + getVideoFile_byID(id).getVideoName() + "\r\n";
         }
         return channelString;
+    }
+
+
+
+    public static ArrayList<VideoFile> getVideos(){
+        ArrayList<VideoFile> temp = new ArrayList<>();
+        if (ID_VideoFileMap != null) {
+            for (Map.Entry<Integer, VideoFile> video : ID_VideoFileMap.entrySet())
+                temp.add(video.getValue());
+        }
+        return temp;
+    }
+
+    public static int getVideoID(){
+        return counterVideoID;
     }
 
     /** Setters */
