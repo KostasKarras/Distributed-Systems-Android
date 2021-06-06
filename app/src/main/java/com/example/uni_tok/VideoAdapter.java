@@ -28,7 +28,6 @@ import java.util.List;
 public class VideoAdapter extends BaseAdapter {
     private ArrayList<VideoFile> videoList;
     private Context mContext;
-    private static int index;
 
     public VideoAdapter(Context context, ArrayList<VideoFile> videoList){
         this.videoList = videoList;
@@ -38,7 +37,6 @@ public class VideoAdapter extends BaseAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
 
-        index = position;
         if (convertView == null)
             convertView = LayoutInflater.from(mContext).inflate(R.layout.single_item_channel, parent, false);
 
@@ -110,10 +108,6 @@ public class VideoAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
-    }
-
-    public static int getIndex(){
-        return index;
     }
 
 }

@@ -45,7 +45,6 @@ public class ChannelActivity extends AppCompatActivity {
     TextView channelName;
     SharedPreferences sharedPreferences;
     ListView lv;
-//    int videoID = 0;
 
     int failed_attempts = 0;
     static int failed_attempts_ = 0;
@@ -68,16 +67,6 @@ public class ChannelActivity extends AppCompatActivity {
         lv = (ListView) findViewById(R.id.listView);
         arrayAdapter = new VideoAdapter(this, (AppNodeImpl.getChannel()).getVideos());
         lv.setAdapter(arrayAdapter);
-
-//        videoID = VideoAdapter.getIndex();
-//        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                VideoFile videoFile = (VideoFile) parent.getItemAtPosition(position);
-//                videoID = videoFile.getVideoID();
-//                Log.d("POSITION", String.valueOf(videoID));
-//            }
-//        });
     }
 
     public void channelActivity(View v) {}
