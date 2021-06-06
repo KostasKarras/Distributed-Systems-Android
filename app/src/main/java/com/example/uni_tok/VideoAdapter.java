@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -27,7 +28,7 @@ import java.util.List;
 public class VideoAdapter extends BaseAdapter {
     private ArrayList<VideoFile> videoList;
     private Context mContext;
-    private int index;
+    private static int index;
 
     public VideoAdapter(Context context, ArrayList<VideoFile> videoList){
         this.videoList = videoList;
@@ -37,8 +38,7 @@ public class VideoAdapter extends BaseAdapter {
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
 
-        this.index = position;
-
+        index = position;
         if (convertView == null)
             convertView = LayoutInflater.from(mContext).inflate(R.layout.single_item_channel, parent, false);
 
@@ -70,6 +70,30 @@ public class VideoAdapter extends BaseAdapter {
             mContext.startActivity(intent);
         });
 
+        convertView.findViewById(R.id.AddHashtag).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println(videoList.get(position).getVideoID());
+                ChannelActivity.AddHashtag(v, videoList.get(position).getVideoID(), mContext);
+            }
+        });
+
+        convertView.findViewById(R.id.RemoveHashtag).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println(videoList.get(position).getVideoID());
+                ChannelActivity.RemoveHashtag(v, videoList.get(position).getVideoID(), mContext);
+            }
+        });
+
+        convertView.findViewById(R.id.DeleteVideo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println(videoList.get(position).getVideoID());
+                ChannelActivity.DeleteVideo(v, videoList.get(position).getVideoID(), mContext);
+            }
+        });
+
         return convertView;
     }
 
@@ -86,6 +110,10 @@ public class VideoAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    public static int getIndex(){
+        return index;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.uni_tok;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.LabeledIntent;
@@ -27,6 +28,7 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -43,9 +45,10 @@ public class ChannelActivity extends AppCompatActivity {
     TextView channelName;
     SharedPreferences sharedPreferences;
     ListView lv;
-    int videoID = 0;
+//    int videoID = 0;
 
     int failed_attempts = 0;
+    static int failed_attempts_ = 0;
 
     private static final int REQUEST_PERMISSION_CODE = 1;
 
@@ -66,6 +69,7 @@ public class ChannelActivity extends AppCompatActivity {
         arrayAdapter = new VideoAdapter(this, (AppNodeImpl.getChannel()).getVideos());
         lv.setAdapter(arrayAdapter);
 
+//        videoID = VideoAdapter.getIndex();
 //        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -148,27 +152,27 @@ public class ChannelActivity extends AppCompatActivity {
 
     }
 
-    public void AddHashtag(View v){
-        Intent intent = new Intent(v.getContext(), addHashtag.class);
+    public static void AddHashtag(View v, int videoID, Context context){
+        Intent intent = new Intent(context, addHashtag.class);
 
         Bundle bundle = new Bundle();
         bundle.putInt("videoID", videoID);
         intent.putExtras(bundle);
 
-        startActivity(intent);
+        context.startActivity(intent);
     }
 
-    public void RemoveHashtag(View v){
-        Intent intent = new Intent(this, removeHashtag.class);
+    public static void RemoveHashtag(View v, int videoID, Context context){
+        Intent intent = new Intent(context, removeHashtag.class);
 
         Bundle bundle = new Bundle();
         bundle.putInt("videoID", videoID);
         intent.putExtras(bundle);
 
-        startActivity(intent);
+        context.startActivity(intent);
     }
 
-    public void DeleteVideo(View v){
+    public static void DeleteVideo(View v, int videoID, Context context){
 
         String action = "Delete Video";
 
@@ -181,23 +185,23 @@ public class ChannelActivity extends AppCompatActivity {
                 .setInputData(data)
                 .build();
 
-        String uniqueWorkName = "Delete Video" + Integer.toString(failed_attempts);
-        failed_attempts += 1;
+        String uniqueWorkName = "Delete Video" + Integer.toString(failed_attempts_);
+        failed_attempts_ += 1;
 
-        WorkManager.getInstance(this)
+        WorkManager.getInstance(context)
                 .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, uploadRequest);
 
-        WorkManager.getInstance(this).getWorkInfoByIdLiveData(uploadRequest.getId())
-                .observe(this, workInfo -> {
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(uploadRequest.getId())
+                .observe((LifecycleOwner) context, workInfo -> {
                     Log.d("State", workInfo.getState().name());
                     if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                        Intent intent = new Intent(this, ChannelActivity.class);
-                        startActivity(intent);
-                        Toast.makeText(getApplicationContext(), "Successful delete video",
+                        Intent intent = new Intent(context, ChannelActivity.class);
+                        context.startActivity(intent);
+                        Toast.makeText(context, "Successful delete video",
                                 Toast.LENGTH_SHORT).show();
 
                     } else if (workInfo.getState() == WorkInfo.State.FAILED) {
-                        Toast.makeText(getApplicationContext(),
+                        Toast.makeText(context,
                                 "Failed delete video", Toast.LENGTH_SHORT).show();
                         Log.d("Status", "Status failed");
                     }
