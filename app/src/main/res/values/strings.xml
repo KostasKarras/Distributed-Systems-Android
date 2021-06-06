@@ -105,4 +105,6 @@
     <string name="subscribedText">SUBSCRIBED</string>
     <string name="continueText">Continue</string>
     <string name="uploadText">Upload</string>
+    <string name="addHashtags">Add Hashtags</string>
+    <string name="removeHashtags">Remove Hashtags</string>
 </resources>

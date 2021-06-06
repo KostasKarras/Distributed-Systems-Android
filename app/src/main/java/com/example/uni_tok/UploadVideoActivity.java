@@ -62,8 +62,6 @@ public class UploadVideoActivity extends Activity {
             media.setAnchorView(myVideo);
 
             video = videoData;
-            //notify to change the list which is printed
-//            arrayAdapter.notifyDataSetChanged();
 
             //start the video
             myVideo.start();

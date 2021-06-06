@@ -13,7 +13,9 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,6 +42,8 @@ public class ChannelActivity extends AppCompatActivity {
     VideoAdapter arrayAdapter;
     TextView channelName;
     SharedPreferences sharedPreferences;
+    ListView lv;
+    int videoID = 0;
 
     int failed_attempts = 0;
 
@@ -58,9 +62,18 @@ public class ChannelActivity extends AppCompatActivity {
         String name = AppNodeImpl.getChannel().getChannelName();
         channelName.setText(name);
 
-        ListView lv = (ListView) findViewById(R.id.listView);
+        lv = (ListView) findViewById(R.id.listView);
         arrayAdapter = new VideoAdapter(this, (AppNodeImpl.getChannel()).getVideos());
         lv.setAdapter(arrayAdapter);
+
+//        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                VideoFile videoFile = (VideoFile) parent.getItemAtPosition(position);
+//                videoID = videoFile.getVideoID();
+//                Log.d("POSITION", String.valueOf(videoID));
+//            }
+//        });
     }
 
     public void channelActivity(View v) {}
@@ -133,6 +146,62 @@ public class ChannelActivity extends AppCompatActivity {
         Intent intent = new Intent(this, runUser.class);
         startActivity(intent);
 
+    }
+
+    public void AddHashtag(View v){
+        Intent intent = new Intent(v.getContext(), addHashtag.class);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("videoID", videoID);
+        intent.putExtras(bundle);
+
+        startActivity(intent);
+    }
+
+    public void RemoveHashtag(View v){
+        Intent intent = new Intent(this, removeHashtag.class);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("videoID", videoID);
+        intent.putExtras(bundle);
+
+        startActivity(intent);
+    }
+
+    public void DeleteVideo(View v){
+
+        String action = "Delete Video";
+
+        Data data = new Data.Builder()
+                .putInt("videoID", videoID)
+                .putString("ACTION", action)
+                .build();
+
+        OneTimeWorkRequest uploadRequest = new OneTimeWorkRequest.Builder(UserWorker.class)
+                .setInputData(data)
+                .build();
+
+        String uniqueWorkName = "Delete Video" + Integer.toString(failed_attempts);
+        failed_attempts += 1;
+
+        WorkManager.getInstance(this)
+                .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, uploadRequest);
+
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(uploadRequest.getId())
+                .observe(this, workInfo -> {
+                    Log.d("State", workInfo.getState().name());
+                    if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        Intent intent = new Intent(this, ChannelActivity.class);
+                        startActivity(intent);
+                        Toast.makeText(getApplicationContext(), "Successful delete video",
+                                Toast.LENGTH_SHORT).show();
+
+                    } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                        Toast.makeText(getApplicationContext(),
+                                "Failed delete video", Toast.LENGTH_SHORT).show();
+                        Log.d("Status", "Status failed");
+                    }
+                });
     }
 
     public void exit(View v) {}

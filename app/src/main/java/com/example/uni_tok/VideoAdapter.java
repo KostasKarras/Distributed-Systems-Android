@@ -1,10 +1,12 @@
 package com.example.uni_tok;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,12 +20,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class VideoAdapter extends BaseAdapter {
     private ArrayList<VideoFile> videoList;
     private Context mContext;
+    private int index;
 
     public VideoAdapter(Context context, ArrayList<VideoFile> videoList){
         this.videoList = videoList;
@@ -32,10 +36,11 @@ public class VideoAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent){
-//        VideoFile videoFile = getItem(position);
+
+        this.index = position;
 
         if (convertView == null)
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.single_item, parent, false);
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.single_item_channel, parent, false);
 
 
         TextView videoName = (TextView) convertView.findViewById(R.id.videoTitle);
@@ -47,9 +52,6 @@ public class VideoAdapter extends BaseAdapter {
         mMMR.setDataSource(mContext, videoUri);
         Bitmap thumbnail = mMMR.getFrameAtTime(20000000);
 
-//        Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(videoList.get(position).getFilepath(),
-//                MediaStore.Video.Thumbnails.MICRO_KIND);
-
         videoName.setText(videoList.get(position).getVideoName());
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -57,10 +59,16 @@ public class VideoAdapter extends BaseAdapter {
             stringBuilder.append(hashtag + ", ");
         if (stringBuilder.length() != 0)
             stringBuilder.deleteCharAt(stringBuilder.length() - 2);
+
         hashtags.setText(stringBuilder);
 
         imageView.setImageBitmap(thumbnail);
 
+        convertView.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(Uri.parse(videoList.get(position).getFilepath()), "video/mp4");
+            mContext.startActivity(intent);
+        });
 
         return convertView;
     }
@@ -69,6 +77,7 @@ public class VideoAdapter extends BaseAdapter {
     public int getCount(){
         return videoList.size();
     }
+
     @Override
     public VideoFile getItem(int position) {
         return videoList.get(position); //returns list item at the specified position

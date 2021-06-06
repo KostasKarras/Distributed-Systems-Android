@@ -26,6 +26,8 @@
         <activity android:name=".ChannelActivity" />
         <activity android:name=".UploadVideoActivity" />
         <activity android:name=".UploadActivity" />
+        <activity android:name=".addHashtag" />
+        <activity android:name=".removeHashtag" />
     </application>
 
 </manifest>

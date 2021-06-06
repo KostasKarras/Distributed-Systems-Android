@@ -248,28 +248,16 @@ public class AppNodeImpl {
 
     }
 
-    public static void addHashTag(VideoFile video) {
+    public static boolean addHashTag(VideoFile video, ArrayList<String> hashtagsAdded) {
 
-        Scanner in3 = new Scanner(System.in);
-        String hashtag;
         ArrayList<String> hashtags = new ArrayList<>();
-        while (true) {
-            System.out.print("Do you want to add a hashtag to this video? (y/n) ");
-            String answer = in3.nextLine();
-            if (answer.equals("n")) {
-                break;
-            }
-
-            System.out.print("Please give the hashtag that you want to add: ");
-            hashtag = in3.nextLine();
-
-            if (!hashtags.contains(hashtag) && !video.getAssociatedHashtags().contains(hashtag)) {
+        for (String hashtag : hashtagsAdded) {
+            if (!video.getAssociatedHashtags().contains(hashtag))
                 hashtags.add(hashtag);
-            }
         }
 
         if (hashtags.isEmpty()) {
-            System.out.println("No hashtags found to add.");
+            Log.d("ADD HASHTAGS", "No hashtags found to add.");
         } else {
 
             HashMap<String, String> notificationHashtags = channel.updateVideoFile(video, hashtags, "ADD");
@@ -281,30 +269,20 @@ public class AppNodeImpl {
             ChannelKey channelKey = new ChannelKey(channel.getChannelName(), video.getVideoID());
             notifyBrokersForChanges(channelKey, hashtags, video.getVideoName(), false);
         }
+        return true;
     }
 
-    public static void removeHashTag(VideoFile video) {
+    public static boolean removeHashTag(VideoFile video, ArrayList<String> hashtagsRemoved) {
 
-        Scanner in4 = new Scanner(System.in);
-        String hashtag;
         ArrayList<String> hashtags = new ArrayList<>();
-        while (true) {
-            System.out.print("Do you want to remove a hashtag to this video? (y/n) ");
-            String answer = in4.nextLine();
-            if (answer.equals("n")) {
-                break;
-            }
-
-            System.out.print("Please give the hashtag that you want to remove: ");
-            hashtag = in4.nextLine();
-
-            if (!hashtags.contains(hashtag) && video.getAssociatedHashtags().contains(hashtag)) {
+        for (String hashtag : hashtagsRemoved) {
+            if (video.getAssociatedHashtags().contains(hashtag)) {
                 hashtags.add(hashtag);
             }
         }
 
         if (hashtags.isEmpty()) {
-            System.out.println("No hashtags found to remove.");
+            Log.d("REMOVE HASHTAGS", "No hashtags found to remove.");
         } else {
 
             HashMap<String, String> notificationHashtags = channel.updateVideoFile(video, hashtags, "REMOVE");
@@ -313,6 +291,7 @@ public class AppNodeImpl {
                     notifyBrokersForHashTags(item.getKey(), item.getValue());
             }
         }
+        return true;
     }
 
 //    @Override
@@ -1013,7 +992,7 @@ public class AppNodeImpl {
 
                 VideoFile video = channel.getVideoFile_byID(videoID);
 
-                addHashTag(video);
+//                addHashTag(video);
 
             } else if (choice.equals("5")) {
 
@@ -1031,7 +1010,7 @@ public class AppNodeImpl {
 
                 VideoFile video = channel.getVideoFile_byID(videoID);
 
-                removeHashTag(video);
+                //removeHashTag(video);
 
             } else if (choice.equals("6")) {
 
