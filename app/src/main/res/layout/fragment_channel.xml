@@ -72,6 +72,7 @@
         android:layout_width="410dp"
         android:layout_height="409dp"
         android:visibility="visible"
+        android:focusable="false"
         app:layout_constraintBottom_toTopOf="@+id/include_bottom_app_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

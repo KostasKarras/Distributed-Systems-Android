@@ -67,6 +67,13 @@ public class SearchActivity extends AppCompatActivity {
 
         // --------------- END OF MICHALIS CHANGES -------------- //
 
+        /**We need to make a new VideoAdapter who is going to take as parameters
+         * 1)context (this)
+         * 2)hashmap (AppNodeImpl.getSearchTopicVideoList())
+         * Now VideoAdapter takes context and Arraylist.
+         * In my opinion it would be better to make a new VideoAdapter (aka VideoAdapterForConsumer)
+         * and not change the existing.
+         * */
     }
 
     public void subscribeAction(View v) {

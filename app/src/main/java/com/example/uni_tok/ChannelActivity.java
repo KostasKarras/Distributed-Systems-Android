@@ -1,6 +1,7 @@
 package com.example.uni_tok;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.LabeledIntent;
@@ -13,7 +14,9 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -25,6 +28,7 @@ import android.widget.VideoView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
@@ -40,8 +44,10 @@ public class ChannelActivity extends AppCompatActivity {
     VideoAdapter arrayAdapter;
     TextView channelName;
     SharedPreferences sharedPreferences;
+    ListView lv;
 
     int failed_attempts = 0;
+    static int failed_attempts_ = 0;
 
     private static final int REQUEST_PERMISSION_CODE = 1;
 
@@ -58,7 +64,7 @@ public class ChannelActivity extends AppCompatActivity {
         String name = AppNodeImpl.getChannel().getChannelName();
         channelName.setText(name);
 
-        ListView lv = (ListView) findViewById(R.id.listView);
+        lv = (ListView) findViewById(R.id.listView);
         arrayAdapter = new VideoAdapter(this, (AppNodeImpl.getChannel()).getVideos());
         lv.setAdapter(arrayAdapter);
     }
@@ -133,6 +139,62 @@ public class ChannelActivity extends AppCompatActivity {
         Intent intent = new Intent(this, runUser.class);
         startActivity(intent);
 
+    }
+
+    public static void AddHashtag(View v, int videoID, Context context){
+        Intent intent = new Intent(context, addHashtag.class);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("videoID", videoID);
+        intent.putExtras(bundle);
+
+        context.startActivity(intent);
+    }
+
+    public static void RemoveHashtag(View v, int videoID, Context context){
+        Intent intent = new Intent(context, removeHashtag.class);
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("videoID", videoID);
+        intent.putExtras(bundle);
+
+        context.startActivity(intent);
+    }
+
+    public static void DeleteVideo(View v, int videoID, Context context){
+
+        String action = "Delete Video";
+
+        Data data = new Data.Builder()
+                .putInt("videoID", videoID)
+                .putString("ACTION", action)
+                .build();
+
+        OneTimeWorkRequest uploadRequest = new OneTimeWorkRequest.Builder(UserWorker.class)
+                .setInputData(data)
+                .build();
+
+        String uniqueWorkName = "Delete Video" + Integer.toString(failed_attempts_);
+        failed_attempts_ += 1;
+
+        WorkManager.getInstance(context)
+                .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, uploadRequest);
+
+        WorkManager.getInstance(context).getWorkInfoByIdLiveData(uploadRequest.getId())
+                .observe((LifecycleOwner) context, workInfo -> {
+                    Log.d("State", workInfo.getState().name());
+                    if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        Intent intent = new Intent(context, ChannelActivity.class);
+                        context.startActivity(intent);
+                        Toast.makeText(context, "Successful delete video",
+                                Toast.LENGTH_SHORT).show();
+
+                    } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                        Toast.makeText(context,
+                                "Failed delete video", Toast.LENGTH_SHORT).show();
+                        Log.d("Status", "Status failed");
+                    }
+                });
     }
 
     public void exit(View v) {}
