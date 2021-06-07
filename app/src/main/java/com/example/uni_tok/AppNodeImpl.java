@@ -51,7 +51,8 @@ public class AppNodeImpl {
     private static ArrayList<String> subscribedToHashtags = new ArrayList<>();
 
     // --------------- MICHALIS CHANGES -------------- //
-    private static HashMap<ChannelKey, String> searchVideoList = new HashMap<>();
+    //private static HashMap<ChannelKey, String> searchVideoList = new HashMap<>();
+    private static ArrayList<VideoInformation> searchVideoList = new ArrayList<>();
     private static LinkedHashMap<ChannelKey, String> homePageVideoList  = new LinkedHashMap<>();
     // --------------- END OF MICHALIS CHANGES -------------- //
 
@@ -145,7 +146,7 @@ public class AppNodeImpl {
             objectOutputStream.flush();
 
             //Read videoList
-            searchVideoList = (HashMap<ChannelKey, String>) objectInputStream.readObject();
+            searchVideoList = (ArrayList<VideoInformation>) objectInputStream.readObject();
 
             fetched_successfully = true;
 
@@ -166,7 +167,7 @@ public class AppNodeImpl {
         homePageVideoList.put(key, title);
     }
 
-    public static HashMap<ChannelKey, String> getSearchTopicVideoList() {
+    public static ArrayList<VideoInformation> getSearchTopicVideoList() {
         return searchVideoList;
     }
 
@@ -699,6 +700,10 @@ public class AppNodeImpl {
 
     public static HashMap<ChannelKey, String> getChannelVideoMap() {
         return channel.getChannelVideoNames();
+    }
+
+    public static HashMap<ChannelKey, ArrayList<String>> getChannelHashtagsMap() {
+        return channel.getChannelAssociatedHashtags();
     }
 
     public static HashMap<ChannelKey, String> getHashtagVideoMap(String hashtag) {

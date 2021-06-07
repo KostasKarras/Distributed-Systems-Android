@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SearchActivity extends AppCompatActivity {
@@ -74,6 +76,10 @@ public class SearchActivity extends AppCompatActivity {
          * In my opinion it would be better to make a new VideoAdapter (aka VideoAdapterForConsumer)
          * and not change the existing.
          * */
+
+        ListView listView = (ListView) findViewById(R.id.listViewSearchActivity);
+        SearchVideoAdapter adapter = new SearchVideoAdapter(this, AppNodeImpl.getSearchTopicVideoList());
+        listView.setAdapter(adapter);
     }
 
     public void subscribeAction(View v) {

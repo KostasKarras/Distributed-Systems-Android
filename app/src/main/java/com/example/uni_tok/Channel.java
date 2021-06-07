@@ -12,6 +12,8 @@ public class Channel {
     private static int counterVideoID;
     private static HashMap<Integer, VideoFile> ID_VideoFileMap;
     private HashMap<ChannelKey, String> ID_VideoNameMap;
+    //DIMITRIS
+    private HashMap<ChannelKey, ArrayList<String>> ID_AssociatedHashtagsMap;
 
     /** Constructors */
 
@@ -23,6 +25,7 @@ public class Channel {
         counterVideoID = 0;
         ID_VideoFileMap = new HashMap<>();
         ID_VideoNameMap = new HashMap<>();
+        ID_AssociatedHashtagsMap = new HashMap<>();
 
     }
 
@@ -43,6 +46,7 @@ public class Channel {
         video.setVideoID(counterVideoID);
         ID_VideoFileMap.put(counterVideoID, video);
         ID_VideoNameMap.put(new ChannelKey(this.channelName, counterVideoID), video.getVideoName());
+        ID_AssociatedHashtagsMap.put(new ChannelKey(this.channelName, counterVideoID), video.getAssociatedHashtags());
         counterVideoID++;
 
         HashMap<String, String> hashtagsNeedNotification = new HashMap<>();
@@ -68,6 +72,7 @@ public class Channel {
     public HashMap<String, String> removeVideoFile(VideoFile video) {
         ID_VideoFileMap.remove(video.getVideoID());
         ID_VideoNameMap.remove(new ChannelKey(this.channelName, video.getVideoID()));
+        ID_AssociatedHashtagsMap.remove(new ChannelKey(this.channelName, video.getVideoID()));
 
         HashMap<String, String> hashtagsNeedNotification = new HashMap<>();
         ArrayList<String> hashtags = video.getAssociatedHashtags();
@@ -154,6 +159,11 @@ public class Channel {
 
     public HashMap<ChannelKey, String> getChannelVideoNames() {
         return ID_VideoNameMap;
+    }
+
+    //DIMITRIS
+    public HashMap<ChannelKey, ArrayList<String>> getChannelAssociatedHashtags() {
+        return ID_AssociatedHashtagsMap;
     }
 
     public String getChannelName(){
