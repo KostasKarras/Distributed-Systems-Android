@@ -49,6 +49,10 @@ public class SearchVideoAdapter extends BaseAdapter {
         hashtags.setText(stringBuilder);
 
         convertView.setOnClickListener(v -> {
+
+            ChannelKey ck = getItem(position).getChannelKey();
+            AppNodeImpl.playData(ck);
+
             //Intent intent = new Intent(mContext, playVideo.class);
             //mContext.startActivity(intent);
         });
