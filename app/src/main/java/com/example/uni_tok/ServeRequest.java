@@ -72,11 +72,9 @@ public class ServeRequest extends Thread {
             } else if (option == 3) { //Notification Message
 
                 String notificationMessage = (String) objectInputStream.readObject();
-                //Michalis
-                ChannelKey key = (ChannelKey) objectInputStream.readObject();
-                String title = (String)objectInputStream.readObject();
-                AppNodeImpl.refreshHomePage(key, title);
-                //
+                //DIMITRIS
+                VideoInformation vi = (VideoInformation) objectInputStream.readObject();
+                AppNodeImpl.refreshHomePage(vi);
                 System.out.println(notificationMessage);
                 //Toast.makeText(getApplicationContext(), notificationMessage,
                 //        Toast.LENGTH_SHORT).show();

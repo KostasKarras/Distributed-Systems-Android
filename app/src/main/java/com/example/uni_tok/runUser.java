@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,6 +67,10 @@ public class runUser extends AppCompatActivity {
         WorkManager.getInstance(this)
                 .enqueueUniqueWork("Handle Incoming Requests",
                         ExistingWorkPolicy.KEEP, oneTimeRequest);
+
+        ListView listView = (ListView) findViewById(R.id.homePageVideoList);
+        SearchVideoAdapter adapter = new SearchVideoAdapter(this, AppNodeImpl.getHomePageVideoList());
+        listView.setAdapter(adapter);
 
         failed_attempts = 0;
     }

@@ -70,11 +70,10 @@
 
     <ListView
         android:id="@+id/listViewSearchActivity"
-        android:layout_width="409dp"
-        android:layout_height="523dp"
-        app:layout_constraintBottom_toTopOf="@+id/include_bottom_app_layout"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@id/include_bottom_app_layout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/view" />
+        app:layout_constraintTop_toBottomOf="@id/view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

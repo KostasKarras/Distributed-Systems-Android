@@ -54,7 +54,8 @@ public class AppNodeImpl {
     // --------------- MICHALIS CHANGES -------------- //
     //private static HashMap<ChannelKey, String> searchVideoList = new HashMap<>();
     private static ArrayList<VideoInformation> searchVideoList = new ArrayList<>();
-    private static LinkedHashMap<ChannelKey, String> homePageVideoList  = new LinkedHashMap<>();
+    //private static LinkedHashMap<ChannelKey, String> homePageVideoList  = new LinkedHashMap<>();
+    private static ArrayList<VideoInformation> homePageVideoList  = new ArrayList<>();
     // --------------- END OF MICHALIS CHANGES -------------- //
 
 
@@ -172,8 +173,12 @@ public class AppNodeImpl {
      * This page uploads to Home Page a video every time a
      * channel or hashtag we are subscribed to uploads a video
      */
-    public synchronized static void refreshHomePage(ChannelKey key, String title) {
-        homePageVideoList.put(key, title);
+    public synchronized static void refreshHomePage(VideoInformation vi) {
+        homePageVideoList.add(0, vi);
+    }
+
+    public static ArrayList<VideoInformation> getHomePageVideoList() {
+        return homePageVideoList;
     }
 
     public static ArrayList<VideoInformation> getSearchTopicVideoList() {
@@ -640,66 +645,55 @@ public class AppNodeImpl {
         return successful_unsubscription;
     }
 
-    public static void playData(HashMap<ChannelKey, String> videoList) {
+    public static void playData(ChannelKey ck) {
 
         File nf = null;
-        Scanner in2 = new Scanner(System.in);
+        String channelName = ck.getChannelName();
+        int videoID = ck.getVideoID();
 
         try {
-            System.out.print("Give the Channel Name that you want to play: ");
-            String channelName = in2.nextLine();
+            //CONNECTING TO BROKER RESPONSIBLE FOR CHANNEL, THAT HAS THE VIDEO WE ASKED FOR
+            SocketAddress brokerAddress = hashTopic(channelName);
+            connect(brokerAddress);
 
-            System.out.print("Give the video ID that you want to play: ");
-            int videoID = in2.nextInt();
+            objectOutputStream.writeObject(3);
+            objectOutputStream.flush();
 
-            ChannelKey key = new ChannelKey(channelName, videoID);
+            objectOutputStream.writeObject(ck);
+            objectOutputStream.flush();
 
-            if (!videoList.containsKey(key)){
-                System.out.println("This combination of channel name and id doesn't exist.");
-            } else {
-                //CONNECTING TO BROKER RESPONSIBLE FOR CHANNEL, THAT HAS THE VIDEO WE ASKED FOR
-                SocketAddress brokerAddress = hashTopic(channelName);
-                connect(brokerAddress);
+            //RECEIVE VIDEO FILE CHUNKS
+            byte[] chunk;
+            ArrayList<byte[]> chunks = new ArrayList<>();
+            int size = (int) objectInputStream.readObject();
 
-                objectOutputStream.writeObject(3);
-                objectOutputStream.flush();
-
-                objectOutputStream.writeObject(key);
-                objectOutputStream.flush();
-
-                //RECEIVE VIDEO FILE CHUNKS
-                byte[] chunk;
-                ArrayList<byte[]> chunks = new ArrayList<>();
-                int size = (int) objectInputStream.readObject();
-
-                if (size == 0) {
-                    System.out.println("CHANNEL HAS NO VIDEO WITH THIS ID...");
+            if (size == 0) {
+                System.out.println("CHANNEL HAS NO VIDEO WITH THIS ID...");
+            }
+            //REBUILD CHUNKS FOR TESTING
+            else {
+                for (int i = 0; i < size; i++) {
+                    chunk = new byte[4096];
+                    objectInputStream.readFully(chunk);
+                    //chunk = objectInputStream.readAllBytes();
+                    chunks.add(chunk);
                 }
-                //REBUILD CHUNKS FOR TESTING
-                else {
-                    for (int i = 0; i < size; i++) {
-                        chunk = new byte[4096];
-                        objectInputStream.readFully(chunk);
-                        //chunk = objectInputStream.readAllBytes();
-                        chunks.add(chunk);
-                    }
-                    try {
-                        nf = new File("Fetched Videos\\" + channel.getChannelName() + "_"
-                                + channelName + "_" + videoID + ".mp4");
-                        for (byte[] ar : chunks) {
-                            FileOutputStream fw = new FileOutputStream(nf, true);
-                            try {
-                                fw.write(ar);
-                            } finally {
-                                fw.close();
-                            }
+                try {
+                    nf = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() +
+                            "Fetched Videos\\" + channelName + "_" + videoID + ".mp4");
+                    for (byte[] ar : chunks) {
+                        FileOutputStream fw = new FileOutputStream(nf, true);
+                        try {
+                            fw.write(ar);
+                        } finally {
+                            fw.close();
                         }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        disconnect();
                     }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    disconnect();
                 }
             }
         } catch(IOException | ClassNotFoundException e){
@@ -895,7 +889,7 @@ public class AppNodeImpl {
                     String answer = in.nextLine();
 
                     if (answer.equals("y")) {
-                        playData(videoList);
+                        //playData(videoList);
                     } else wantVideo = false;
                 }
 
