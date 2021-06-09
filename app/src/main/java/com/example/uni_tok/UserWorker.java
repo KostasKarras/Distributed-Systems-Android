@@ -36,6 +36,7 @@ public class UserWorker extends Worker {
         String action;
         String videoName;
         String path;
+        String channelName;
         String [] hashtags;
         String [] hashtagsAdded;
         String [] hashtagsRemoved;
@@ -93,6 +94,15 @@ public class UserWorker extends Worker {
                         if (successful_upload) return Result.success();
                     }
                     break;
+
+                //-----------------Kostas Start-----------------//
+                case "Pull Video":
+                    channelName = getInputData().getString("ChannelName");
+                    videoID = getInputData().getInt("videoID", -1);
+                    boolean successful_pull = AppNodeImpl.playData(new ChannelKey(channelName, videoID));
+                    if (successful_pull) return Result.success();
+                    break;
+                //-----------------Kostas End-----------------//
 
                 case "Add Hashtags":
                     videoID = getInputData().getInt("videoID", -1);

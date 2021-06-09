@@ -666,11 +666,13 @@ public class AppNodeImpl {
         return successful_unsubscription;
     }
 
-    public static void playData(ChannelKey ck) {
+    public static boolean playData(ChannelKey ck) {
 
         File nf = null;
         String channelName = ck.getChannelName();
         int videoID = ck.getVideoID();
+
+        boolean successfulPull = false;
 
         try {
             //CONNECTING TO BROKER RESPONSIBLE FOR CHANNEL, THAT HAS THE VIDEO WE ASKED FOR
@@ -701,11 +703,12 @@ public class AppNodeImpl {
                 }
                 try {
                     nf = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() +
-                            "Fetched Videos\\" + channelName + "_" + videoID + ".mp4");
+                            "/Fetched Videos/" + channelName + "_" + videoID + ".mp4");
                     for (byte[] ar : chunks) {
                         FileOutputStream fw = new FileOutputStream(nf, true);
                         try {
                             fw.write(ar);
+                            successfulPull = true;
                         } finally {
                             fw.close();
                         }
@@ -720,6 +723,7 @@ public class AppNodeImpl {
         } catch(IOException | ClassNotFoundException e){
             e.printStackTrace();
         }
+        return successfulPull;
     }
 
     public static HashMap<ChannelKey, String> getChannelVideoMap() {
