@@ -183,6 +183,9 @@ public class AppNodeImpl {
     public synchronized static void refreshHomePage(ArrayList<VideoInformation> vi_list) {
         homePageVideoList.addAll(vi_list);
         Collections.sort(homePageVideoList);
+        while(homePageVideoList.size() > 10) {
+            homePageVideoList.remove(homePageVideoList.size()-1);
+        }
     }
 
     public static ArrayList<VideoInformation> getHomePageVideoList() {

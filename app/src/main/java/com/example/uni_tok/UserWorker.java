@@ -58,6 +58,7 @@ public class UserWorker extends Worker {
                     if (topic != null) {
                         socketAddress = AppNodeImpl.hashTopic(topic);
                         successful_subscription = AppNodeImpl.register(socketAddress, topic);
+                        AppNodeImpl.refreshHomePage(AppNodeImpl.getSearchTopicVideoList());
                         if (successful_subscription) return Result.success();
                     }
                     break;

@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
 
         submitButton = (Button) findViewById(R.id.AddressKeeperSubmit);
         submitButton.setOnClickListener((View v) -> newChannel());
-
         failed_attempts = 0;
 
     }
