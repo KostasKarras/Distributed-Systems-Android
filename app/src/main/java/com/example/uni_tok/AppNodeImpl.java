@@ -1,5 +1,6 @@
 package com.example.uni_tok;
 
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -67,6 +68,13 @@ public class AppNodeImpl {
     public static void init(int port) {
         try {
             serverSocket = new ServerSocket(port, 60, InetAddress.getLocalHost());
+
+            File uploadedDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + "/Uploaded Videos/");
+            uploadedDir.mkdirs();
+            File fetchedDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + "/Fetched Videos/");
+            fetchedDir.mkdirs();
+
+
         } catch (IOException io) {
             Log.d("Initialization Error", "Couldn't initialise App Node!");
         }
@@ -106,6 +114,7 @@ public class AppNodeImpl {
         objectOutputStream.flush();
 
         //SEND SOCKET ADDRESS FOR CONNECTIONS
+        init(4960);
         String string_socket = serverSocket.getLocalSocketAddress().toString().split("/")[1];
         String[] array = string_socket.split(":");
         InetAddress hear_ip = InetAddress.getByName(array[0]);

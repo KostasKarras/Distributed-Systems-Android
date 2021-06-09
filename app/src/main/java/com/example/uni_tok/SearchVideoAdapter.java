@@ -49,7 +49,7 @@ public class SearchVideoAdapter extends BaseAdapter {
         hashtags.setText(stringBuilder);
 
         convertView.setOnClickListener(v -> {
-            //Intent intent = new Intent(mContext, sfsdf.class);
+            //Intent intent = new Intent(mContext, playVideo.class);
             //mContext.startActivity(intent);
         });
 

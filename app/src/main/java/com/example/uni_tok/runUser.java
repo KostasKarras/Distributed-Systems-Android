@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +28,7 @@ import androidx.work.WorkManager;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
 import java.util.HashMap;
 
 public class runUser extends AppCompatActivity {
@@ -48,6 +50,7 @@ public class runUser extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         Log.d("CREATION", "I am in onCreate of runUser!\n");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_page_activity);

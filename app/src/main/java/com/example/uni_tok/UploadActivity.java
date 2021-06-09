@@ -1,5 +1,6 @@
 package com.example.uni_tok;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -7,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,14 +22,20 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 public class UploadActivity extends AppCompatActivity {
 
@@ -62,64 +70,52 @@ public class UploadActivity extends AppCompatActivity {
 
     public void channelActivity(View v) {
 
-        //Copy
-        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + "/Uploaded Videos/";
-        File myDir = new File(root);
-        myDir.mkdirs();
-        String target = videoNameEditText.getText().toString() + "_" + Channel.getVideoID() + ".mp4";
-        File file = new File(myDir, target);
-        Log.i("LOAD", root + target);
-        String filepath = getRealPathFromURI(video);
-        try {
-            File source = new File(filepath);
-            FileChannel targetChannel = new FileOutputStream(file).getChannel();
-            FileChannel sourceChannel = new FileInputStream(source).getChannel();
-            if (sourceChannel != null & targetChannel != null){
-                targetChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d("COPY","Fail!");
+        String target =  videoNameEditText.getText().toString() + "_" + Channel.getVideoID() + ".mp4";
+        String path = getRealPathFromURI(this, video, target);
+        Log.d("PATH", path);
+
+        if(path != null) {
+            Button button = (Button) v;
+            String action = button.getText().toString();
+
+            String [] hashtags = hashtagsEditText.getText().toString().split(" ");
+
+            Data data = new Data.Builder()
+                    .putString("path",path)
+                    .putString("videoName", videoNameEditText.getText().toString())
+                    .putStringArray("associatedHashtags", hashtags)
+                    .putString("ACTION", action)
+                    .build();
+
+            OneTimeWorkRequest uploadRequest = new OneTimeWorkRequest.Builder(UserWorker.class)
+                    .setInputData(data)
+                    .build();
+
+            String uniqueWorkName = "Upload" + Integer.toString(failed_attempts);
+            failed_attempts += 1;
+
+            WorkManager.getInstance(this)
+                    .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, uploadRequest);
+
+            WorkManager.getInstance(this).getWorkInfoByIdLiveData(uploadRequest.getId())
+                    .observe(this, workInfo -> {
+                        Log.d("State", workInfo.getState().name());
+                        if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                            Intent intent = new Intent(this, ChannelActivity.class);
+                            startActivity(intent);
+                            Toast.makeText(getApplicationContext(), "Successful upload",
+                                    Toast.LENGTH_SHORT).show();
+
+                        } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                            Toast.makeText(getApplicationContext(),
+                                    "Failed upload", Toast.LENGTH_SHORT).show();
+                            Log.d("Status", "Status failed");
+                        }
+                    });
+        } else {
+            Log.d("GET PATH", "FAILED");
         }
-        //End of Copy
 
-        Button button = (Button) v;
-        String action = button.getText().toString();
-
-        String [] hashtags = hashtagsEditText.getText().toString().split(" ");
-
-        Data data = new Data.Builder()
-                .putString("path", file.getPath())
-                .putString("videoName", videoNameEditText.getText().toString())
-                .putStringArray("associatedHashtags", hashtags)
-                .putString("ACTION", action)
-                .build();
-
-        OneTimeWorkRequest uploadRequest = new OneTimeWorkRequest.Builder(UserWorker.class)
-                .setInputData(data)
-                .build();
-
-        String uniqueWorkName = "Upload" + Integer.toString(failed_attempts);
-        failed_attempts += 1;
-
-        WorkManager.getInstance(this)
-                .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, uploadRequest);
-
-        WorkManager.getInstance(this).getWorkInfoByIdLiveData(uploadRequest.getId())
-                .observe(this, workInfo -> {
-                    Log.d("State", workInfo.getState().name());
-                    if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                        Intent intent = new Intent(this, ChannelActivity.class);
-                        startActivity(intent);
-                        Toast.makeText(getApplicationContext(), "Successful upload",
-                                Toast.LENGTH_SHORT).show();
-
-                    } else if (workInfo.getState() == WorkInfo.State.FAILED) {
-                        Toast.makeText(getApplicationContext(),
-                                "Failed upload", Toast.LENGTH_SHORT).show();
-                        Log.d("Status", "Status failed");
-                    }
-                });
     }
 
     public void searchActivity(View v) {
@@ -145,21 +141,43 @@ public class UploadActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private String getRealPathFromURI(Uri contentURI) {
-        Cursor cursor = getContentResolver().query(contentURI, null, null, null, null);
-        cursor.moveToFirst();
-        String document_id = cursor.getString(0);
-        document_id = document_id.substring(document_id.lastIndexOf(":")+1);
-        cursor.close();
-
-        cursor = getContentResolver().query(
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                null, MediaStore.Video.Media._ID + " = ? ", new String[]{document_id}, null);
-        cursor.moveToFirst();
-        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA));
-        cursor.close();
-
-        return path;
+    public static void copy(Context context, Uri srcUri, File dstFile) {
+        try {
+            InputStream inputStream = context.getContentResolver().openInputStream(srcUri);
+            if (inputStream == null) return;
+            OutputStream outputStream = new FileOutputStream(dstFile);
+            copyStream(inputStream, outputStream);
+            inputStream.close();
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+    private static void copyStream(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        while (true) {
+            int bytesRead = in.read(buffer);
+            if (bytesRead == -1)
+                break;
+            out.write(buffer, 0, bytesRead);
+        }
+    }
+
+    private String getRealPathFromURI(Context context, Uri contentUri, String fileName) {
+        Log.d("CONTENT URI", contentUri.toString());
+        Log.d("FILENAME", fileName);
+        //copy file and send new file path
+        if (!TextUtils.isEmpty(fileName)) {
+            Log.d("ENVIRONMENT PATH", Environment.getExternalStorageDirectory().getAbsolutePath());
+            //File copyDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString()+ "/Uploaded_Videos/");
+            //copyDir.mkdirs();
+            File copyFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString()+ "/Uploaded Videos/", fileName);
+            copy(context, contentUri, copyFile);
+            return copyFile.getAbsolutePath();
+        }
+        return null;
+
+        }
 
 }

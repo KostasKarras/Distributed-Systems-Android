@@ -59,6 +59,9 @@ public class ChannelActivity extends AppCompatActivity {
 
         search_bar = (EditText)findViewById(R.id.search_bar);
 
+        sharedPreferences = getApplicationContext()
+                .getSharedPreferences("appdata", MODE_PRIVATE);
+
         //LOAD CHANNEL NAME
         channelName = (TextView)findViewById(R.id.channelNameTextview);
         String name = AppNodeImpl.getChannel().getChannelName();

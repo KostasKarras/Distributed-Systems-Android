@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -47,13 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
         failed_attempts = 0;
 
-        LinkedHashMap<Integer, String> test= new LinkedHashMap<>();
-        test.put(10, "Michael");
-        test.put(20, "George");
-        test.put(30, "Grace");
-        for (int item : test.keySet()) {
-            Log.d("ITEM", test.get(item));
-        }
     }
 /*
     public void newChannel(){

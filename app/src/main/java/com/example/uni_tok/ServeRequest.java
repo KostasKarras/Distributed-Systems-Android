@@ -1,5 +1,7 @@
 package com.example.uni_tok;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -29,6 +31,8 @@ public class ServeRequest extends Thread {
         try{
 
             int option = (int) objectInputStream.readObject();
+
+            Log.d("CONNECTION", "SUCCESSFUL");
 
             if (option == 1) { //Pull List
 
