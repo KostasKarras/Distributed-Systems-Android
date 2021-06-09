@@ -18,7 +18,7 @@ public class ChannelKey implements Serializable {
     ChannelKey(String channelName, int videoID) {
         this.channelName = channelName;
         this.videoID = videoID;
-        date = new Date();
+        date = null;
     }
 
     @Override
@@ -50,5 +50,9 @@ public class ChannelKey implements Serializable {
 
     public Date getDate() {
         return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

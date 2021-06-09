@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class VideoFile {
 
@@ -13,13 +14,14 @@ public class VideoFile {
     private ArrayList<String> associatedHashtags;
     private int videoID;
     private String videoName;
-
+    private Date date;
 
     /** Constructor */
     public VideoFile (String filepath, ArrayList<String> associatedHashtags, String videoName) {
         this.filepath = filepath;
         this.associatedHashtags = associatedHashtags;
         this.videoName = videoName;
+        date = new Date();
     }
 
     public byte[] getVideoFileChunk() {
@@ -70,7 +72,15 @@ public class VideoFile {
         this.videoID = videoID;
     }
 
-//    public void setVideoName(String videoName) {
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    //    public void setVideoName(String videoName) {
 //        this.videoName = videoName;
 //    }
 }

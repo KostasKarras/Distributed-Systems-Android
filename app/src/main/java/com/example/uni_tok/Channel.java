@@ -42,11 +42,11 @@ public class Channel {
 
     }
 
-    public HashMap<String, String> addVideoFile(VideoFile video) {
+    public HashMap<String, String> addVideoFile(VideoFile video, ChannelKey channelKey) {
         video.setVideoID(counterVideoID);
         ID_VideoFileMap.put(counterVideoID, video);
-        ID_VideoNameMap.put(new ChannelKey(this.channelName, counterVideoID), video.getVideoName());
-        ID_AssociatedHashtagsMap.put(new ChannelKey(this.channelName, counterVideoID), video.getAssociatedHashtags());
+        ID_VideoNameMap.put(channelKey, video.getVideoName());
+        ID_AssociatedHashtagsMap.put(channelKey, video.getAssociatedHashtags());
         counterVideoID++;
 
         HashMap<String, String> hashtagsNeedNotification = new HashMap<>();

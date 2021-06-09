@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -74,7 +75,6 @@ public class AppNodeImpl {
             uploadedDir.mkdirs();
             File fetchedDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + "/Fetched Videos/");
             fetchedDir.mkdirs();
-
 
         } catch (IOException io) {
             Log.d("Initialization Error", "Couldn't initialise App Node!");
@@ -180,6 +180,11 @@ public class AppNodeImpl {
         }
     }
 
+    public synchronized static void refreshHomePage(ArrayList<VideoInformation> vi_list) {
+        homePageVideoList.addAll(vi_list);
+        Collections.sort(homePageVideoList);
+    }
+
     public static ArrayList<VideoInformation> getHomePageVideoList() {
         return homePageVideoList;
     }
@@ -200,15 +205,17 @@ public class AppNodeImpl {
 
     public static boolean Upload(String path, ArrayList<String> associatedHashtags, String videoName){
         VideoFile videoFile = new VideoFile(path, associatedHashtags, videoName);
-        HashMap<String, String> notificationHashtags = (AppNodeImpl.getChannel()).addVideoFile(videoFile);
+
+        ChannelKey channelKey = new ChannelKey((AppNodeImpl.getChannel()).getChannelName(),
+                videoFile.getVideoID());
+        channelKey.setDate(videoFile.getDate());
+        HashMap<String, String> notificationHashtags = (AppNodeImpl.getChannel()).addVideoFile(videoFile, channelKey);
 
         if (!notificationHashtags.isEmpty()) {
             for (Map.Entry<String, String> item : notificationHashtags.entrySet())
                 AppNodeImpl.notifyBrokersForHashTags(item.getKey(), item.getValue());
         }
 
-        ChannelKey channelKey = new ChannelKey((AppNodeImpl.getChannel()).getChannelName(),
-                videoFile.getVideoID());
         AppNodeImpl.notifyBrokersForChanges(channelKey, associatedHashtags, videoName, associatedHashtags, true);
 
         return true;
@@ -285,6 +292,8 @@ public class AppNodeImpl {
             }
 
             ChannelKey channelKey = new ChannelKey(channel.getChannelName(), video.getVideoID());
+            channelKey.setDate(video.getDate());
+
             notifyBrokersForChanges(channelKey, hashtags, video.getVideoName(), video.getAssociatedHashtags(), false);
         }
         return true;
@@ -1097,7 +1106,7 @@ public class AppNodeImpl {
 //                } else {
 //                    System.out.println("You didn't choose any file. Upload cancelled...");
 //                }
-
+/*
                 String filepath;
                 String videoTitle;
                 String hashtag;
@@ -1151,6 +1160,8 @@ public class AppNodeImpl {
                 } else {
                     channel.removeVideoFile(video);
                 }
+
+ */
             }
 
             else if (choice.equals("7")){

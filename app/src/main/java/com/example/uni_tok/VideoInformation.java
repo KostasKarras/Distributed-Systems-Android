@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class VideoInformation implements Serializable {
+public class VideoInformation implements Serializable, Comparable<VideoInformation> {
     private ChannelKey ck;
     private String videoTitle;
     private ArrayList<String> associatedHashtags;
@@ -17,7 +17,7 @@ public class VideoInformation implements Serializable {
         this.videoTitle = videoTitle;
         this.associatedHashtags = associatedHashtags;
         date = ck.getDate();
-        Log.d("DATE", date.toString());
+        //Log.d("DATE", date.toString());
     }
 
     public ChannelKey getChannelKey() {
@@ -40,8 +40,11 @@ public class VideoInformation implements Serializable {
         return associatedHashtags;
     }
 
-    public int compareTo(Date date) {
-        return this.compareTo(date);
+    public Date getDate() {
+        return date;
     }
 
+    public int compareTo(VideoInformation vi) {
+        return this.getDate().compareTo(vi.getDate()) * (-1);
+    }
 }
