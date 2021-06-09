@@ -175,6 +175,9 @@ public class AppNodeImpl {
      */
     public synchronized static void refreshHomePage(VideoInformation vi) {
         homePageVideoList.add(0, vi);
+        if (homePageVideoList.size() > 10) {
+            homePageVideoList.remove(homePageVideoList.size()-1);
+        }
     }
 
     public static ArrayList<VideoInformation> getHomePageVideoList() {
@@ -206,7 +209,7 @@ public class AppNodeImpl {
 
         ChannelKey channelKey = new ChannelKey((AppNodeImpl.getChannel()).getChannelName(),
                 videoFile.getVideoID());
-        AppNodeImpl.notifyBrokersForChanges(channelKey, associatedHashtags, videoName, true);
+        AppNodeImpl.notifyBrokersForChanges(channelKey, associatedHashtags, videoName, associatedHashtags, true);
 
         return true;
     }
@@ -282,7 +285,7 @@ public class AppNodeImpl {
             }
 
             ChannelKey channelKey = new ChannelKey(channel.getChannelName(), video.getVideoID());
-            notifyBrokersForChanges(channelKey, hashtags, video.getVideoName(), false);
+            notifyBrokersForChanges(channelKey, hashtags, video.getVideoName(), video.getAssociatedHashtags(), false);
         }
         return true;
     }
@@ -388,7 +391,7 @@ public class AppNodeImpl {
         }
     }
 
-    public static void notifyBrokersForChanges(ChannelKey channelKey, ArrayList<String> hashtags, String title, boolean action) {
+    public static void notifyBrokersForChanges(ChannelKey channelKey, ArrayList<String> hashtags, String title, ArrayList<String> associatedHashtags, boolean action) {
 
         if (!hashtags.isEmpty()) {
             for (String hashtag : hashtags) {
@@ -408,6 +411,9 @@ public class AppNodeImpl {
                     objectOutputStream.flush();
 
                     objectOutputStream.writeObject(title);
+                    objectOutputStream.flush();
+
+                    objectOutputStream.writeObject(associatedHashtags);
                     objectOutputStream.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -431,6 +437,9 @@ public class AppNodeImpl {
                 objectOutputStream.flush();
 
                 objectOutputStream.writeObject(title);
+                objectOutputStream.flush();
+
+                objectOutputStream.writeObject(associatedHashtags);
                 objectOutputStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -1138,7 +1147,7 @@ public class AppNodeImpl {
                     }
 
                     ChannelKey channelKey = new ChannelKey(channel.getChannelName(), video.getVideoID());
-                    notifyBrokersForChanges(channelKey, associatedHashtags, videoTitle, true);
+                    notifyBrokersForChanges(channelKey, associatedHashtags, videoTitle, associatedHashtags, true);
                 } else {
                     channel.removeVideoFile(video);
                 }
