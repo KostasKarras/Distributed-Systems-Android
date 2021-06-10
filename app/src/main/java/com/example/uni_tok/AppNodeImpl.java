@@ -230,8 +230,7 @@ public class AppNodeImpl {
         VideoFile videoFile = new VideoFile(path, associatedHashtags, videoName);
 
         ChannelKey channelKey = new ChannelKey((AppNodeImpl.getChannel()).getChannelName(),
-                videoFile.getVideoID());
-        channelKey.setDate(videoFile.getDate());
+                AppNodeImpl.getChannel().getCounterVideoID()).setDate(videoFile.getDate());
         HashMap<String, String> notificationHashtags = (AppNodeImpl.getChannel()).addVideoFile(videoFile, channelKey);
 
         if (!notificationHashtags.isEmpty()) {
