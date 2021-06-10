@@ -27,7 +27,7 @@ public class playVideo extends AppCompatActivity {
     private VideoView myVideo;
     private String filepath;
     private MediaController media;
-    private Context parent;
+    private String parent;
     private static int failed_attempts;
 
     @Override
@@ -41,14 +41,14 @@ public class playVideo extends AppCompatActivity {
 
         Bundle getUri = this.getIntent().getExtras();
         filepath = getUri.getString("filepath");
-
-        parent = getParent().getApplicationContext();
-        Log.d("CONTEXT", parent.toString());
+        parent = getUri.getString("context");
+        Log.d("CONTEXT", parent);
 
         myVideo = (VideoView) findViewById(R.id.videoViewForPlayData);
         myVideo.setVideoPath(filepath);
 
         //controller(pause, navigate forward, navigate backward)
+        media = new MediaController(this);
         myVideo.setMediaController(media);
         media.setAnchorView(myVideo);
 
@@ -58,10 +58,10 @@ public class playVideo extends AppCompatActivity {
 
     public void Back(View v){
         //Not right, I don't know already what parent contains.
-        if (parent.equals("Search")){
+        if (parent.equals("SearchActivity")){
             Intent intent = new Intent(this, SearchActivity.class);
             startActivity(intent);
-        } else if (parent.equals("Main")){
+        } else if (parent.equals("runUser")){
             Intent intent = new Intent(this, runUser.class);
             startActivity(intent);
         }

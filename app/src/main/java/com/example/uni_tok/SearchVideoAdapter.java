@@ -32,13 +32,11 @@ public class SearchVideoAdapter extends BaseAdapter {
     private ArrayList<VideoInformation> videoList;
     private Context mContext;
     private static int failed_attempts;
-    private static boolean successfulPullVideo;
 
     public SearchVideoAdapter(Context context, ArrayList<VideoInformation> videoList){
         this.videoList = videoList;
         this.mContext = context;
         failed_attempts = 0;
-        successfulPullVideo = false;
     }
 
     @Override
@@ -66,20 +64,7 @@ public class SearchVideoAdapter extends BaseAdapter {
 
             //-----------------Kostas Start-----------------//
             ChannelKey ck = getItem(position).getChannelKey();
-            boolean pulled = pullVideo(ck, mContext);
-
-            if (pulled){
-                Intent intent = new Intent(mContext, playVideo.class);
-
-                String filepath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() +
-                        "/Fetched Videos/" + videoList.get(position).getChannelName() + "_" +
-                        videoList.get(position).getVideoID() + ".mp4";
-                Bundle bundle = new Bundle();
-                bundle.putString("filepath", filepath);
-                intent.putExtras(bundle);
-
-                mContext.startActivity(intent);
-            }
+            pullVideo(ck, mContext, videoList.get(position));
             //-----------------Kostas End-----------------//
         });
 
@@ -87,7 +72,7 @@ public class SearchVideoAdapter extends BaseAdapter {
     }
 
     //-----------------Kostas Start-----------------//
-    public static boolean pullVideo(ChannelKey channelKey, Context context){
+    public static void pullVideo(ChannelKey channelKey, Context context, VideoInformation video){
         String action = "Pull Video";
 
         Data data = new Data.Builder()
@@ -110,18 +95,28 @@ public class SearchVideoAdapter extends BaseAdapter {
                 .observe((LifecycleOwner) context, workInfo -> {
                     Log.d("State", workInfo.getState().name());
                     if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                        successfulPullVideo = true;
+
+                        Intent intent = new Intent(context, playVideo.class);
+
+                        String filepath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+                                .toString() + "/Fetched Videos/" + video.getChannelName() + "_" +
+                                video.getVideoID() + ".mp4";
+                        Bundle bundle = new Bundle();
+                        bundle.putString("filepath", filepath);
+                        bundle.putString("context", context.getClass().getSimpleName());
+                        intent.putExtras(bundle);
+
+                        context.startActivity(intent);
+
                         Toast.makeText(context, "Successful pull video",
                                 Toast.LENGTH_SHORT).show();
 
                     } else if (workInfo.getState() == WorkInfo.State.FAILED) {
-                        successfulPullVideo = false;
                         Toast.makeText(context,
                                 "Failed pull video", Toast.LENGTH_SHORT).show();
                         Log.d("Status", "Status failed");
                     }
                 });
-        return successfulPullVideo;
     }
     //-----------------Kostas End-----------------//
 
