@@ -70,6 +70,7 @@ public class AppNodeImpl {
     public static void init(int port) {
         try {
             serverSocket = new ServerSocket(port, 60, InetAddress.getLocalHost());
+            Log.d("LOCAL HOST", InetAddress.getLocalHost().toString());
             Log.d("SERVER SOCKET 1", serverSocket.getLocalSocketAddress().toString());
 
             File uploadedDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + "/Uploaded Videos/");
