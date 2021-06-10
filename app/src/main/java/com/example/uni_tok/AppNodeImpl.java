@@ -70,6 +70,7 @@ public class AppNodeImpl {
     public static void init(int port) {
         try {
             serverSocket = new ServerSocket(port, 60, InetAddress.getLocalHost());
+            Log.d("SERVER SOCKET 1", serverSocket.getLocalSocketAddress().toString());
 
             File uploadedDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + "/Uploaded Videos/");
             uploadedDir.mkdirs();
@@ -119,7 +120,8 @@ public class AppNodeImpl {
         String string_socket = serverSocket.getLocalSocketAddress().toString().split("/")[1];
         String[] array = string_socket.split(":");
         InetAddress hear_ip = InetAddress.getByName(array[0]);
-        int hear_port = Integer.parseInt(array[1]);
+        //int hear_port = Integer.parseInt(array[1]);
+        int hear_port = 7800;
         hear_address = new InetSocketAddress(hear_ip, hear_port);
         objectOutputStream.writeObject(hear_address);
         objectOutputStream.flush();
@@ -188,6 +190,23 @@ public class AppNodeImpl {
         }
     }
 
+    public synchronized static void refreshHomePage(String topic) {
+        if (topic.charAt(0) == '#') {
+            for (VideoInformation item : homePageVideoList) {
+                if (item.getHashtags().contains(topic)) {
+                    homePageVideoList.remove(item);
+                }
+            }
+        }
+        else {
+            for (VideoInformation item : homePageVideoList) {
+                if (item.getChannelName().equals(topic)) {
+                    homePageVideoList.remove(item);
+                }
+            }
+        }
+    }
+
     public static ArrayList<VideoInformation> getHomePageVideoList() {
         return homePageVideoList;
     }
@@ -229,6 +248,7 @@ public class AppNodeImpl {
     public static void handleRequest() {
         try {
             while(true) {
+                Log.d("WAITING FOR CONNECTIONS", "START");
                 Socket connectionSocket = serverSocket.accept();
                 new ServeRequest(connectionSocket).start();
             }
@@ -666,11 +686,13 @@ public class AppNodeImpl {
         return successful_unsubscription;
     }
 
-    public static void playData(ChannelKey ck) {
+    public static boolean playData(ChannelKey ck) {
 
         File nf = null;
+        FileOutputStream fw = null;
         String channelName = ck.getChannelName();
         int videoID = ck.getVideoID();
+        boolean successfullPull = true;
 
         try {
             //CONNECTING TO BROKER RESPONSIBLE FOR CHANNEL, THAT HAS THE VIDEO WE ASKED FOR
@@ -701,25 +723,27 @@ public class AppNodeImpl {
                 }
                 try {
                     nf = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() +
-                            "Fetched Videos\\" + channelName + "_" + videoID + ".mp4");
+                            "/Fetched Videos/" + channelName + "_" + videoID + ".mp4");
+                    fw = new FileOutputStream(nf, true);
                     for (byte[] ar : chunks) {
-                        FileOutputStream fw = new FileOutputStream(nf, true);
-                        try {
-                            fw.write(ar);
-                        } finally {
-                            fw.close();
-                        }
+                        fw.write(ar);
                     }
 
                 } catch (IOException e) {
+                    successfullPull = false;
                     e.printStackTrace();
                 } finally {
+                    if (fw != null) {
+                        fw.close();
+                    }
                     disconnect();
                 }
             }
         } catch(IOException | ClassNotFoundException e){
+            successfullPull = false;
             e.printStackTrace();
         }
+        return successfullPull;
     }
 
     public static HashMap<ChannelKey, String> getChannelVideoMap() {

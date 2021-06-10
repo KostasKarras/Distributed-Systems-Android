@@ -17,6 +17,7 @@ public class ServeRequest extends Thread {
     private ObjectOutputStream objectOutputStream;
 
     ServeRequest(Socket s) {
+        Log.d("CONSTRUCTOR", "IN");
         socket = s;
         try {
             objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -28,6 +29,7 @@ public class ServeRequest extends Thread {
 
     public void run() {
 
+        Log.d("RUN", "IN");
         try{
 
             int option = (int) objectInputStream.readObject();

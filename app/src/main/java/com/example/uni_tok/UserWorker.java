@@ -36,6 +36,7 @@ public class UserWorker extends Worker {
         String action;
         String videoName;
         String path;
+        String channelName;
         String [] hashtags;
         String [] hashtagsAdded;
         String [] hashtagsRemoved;
@@ -58,8 +59,10 @@ public class UserWorker extends Worker {
                     if (topic != null) {
                         socketAddress = AppNodeImpl.hashTopic(topic);
                         successful_subscription = AppNodeImpl.register(socketAddress, topic);
-                        AppNodeImpl.refreshHomePage(AppNodeImpl.getSearchTopicVideoList());
-                        if (successful_subscription) return Result.success();
+                        if (successful_subscription) {
+                            AppNodeImpl.refreshHomePage(AppNodeImpl.getSearchTopicVideoList());
+                            return Result.success();
+                        }
                     }
                     break;
 
@@ -70,7 +73,10 @@ public class UserWorker extends Worker {
                     if (topic!=null) {
                         socketAddress = AppNodeImpl.hashTopic(topic);
                         successful_unsubscription = AppNodeImpl.unregister(socketAddress, topic);
-                        if (successful_unsubscription) return Result.success();
+                        if (successful_unsubscription) {
+                            AppNodeImpl.refreshHomePage(topic);
+                            return Result.success();
+                        }
                     }
                     break;
 
@@ -151,6 +157,15 @@ public class UserWorker extends Worker {
                         Log.d("Error", "Something Bad happened!");
                     }
                     break;
+
+                //-----------------Kostas Start-----------------//
+                case "Pull Video":
+                    channelName = getInputData().getString("ChannelName");
+                    videoID = getInputData().getInt("videoID", -1);
+                    boolean successful_pull = AppNodeImpl.playData(new ChannelKey(channelName, videoID));
+                    if (successful_pull) return Result.success();
+                    break;
+                //-----------------Kostas End-----------------//
             }
 
         }

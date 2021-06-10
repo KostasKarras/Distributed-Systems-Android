@@ -1,6 +1,7 @@
 package com.example.uni_tok;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -34,6 +35,7 @@ public class SearchActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     TextView relatedTopic;
     int failed_attempts;
+    static Context context;
 
     private static final int REQUEST_PERMISSION_CODE = 1;
 
@@ -42,6 +44,8 @@ public class SearchActivity extends AppCompatActivity {
         Log.d("CREATION", "I am in search activity!\n");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_search);
+
+        context = getApplicationContext();
 
         sharedPreferences = getApplicationContext()
                            .getSharedPreferences("appdata", MODE_PRIVATE);
@@ -219,5 +223,9 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void exit(View v) {}
+
+    public Context getContext() {
+        return this;
+    }
 
 }

@@ -5,15 +5,25 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
 
 import java.util.ArrayList;
 
@@ -21,10 +31,12 @@ public class SearchVideoAdapter extends BaseAdapter {
 
     private ArrayList<VideoInformation> videoList;
     private Context mContext;
+    private static int failed_attempts;
 
     public SearchVideoAdapter(Context context, ArrayList<VideoInformation> videoList){
         this.videoList = videoList;
         this.mContext = context;
+        failed_attempts = 0;
     }
 
     @Override
@@ -51,13 +63,62 @@ public class SearchVideoAdapter extends BaseAdapter {
         convertView.setOnClickListener(v -> {
 
             ChannelKey ck = getItem(position).getChannelKey();
-            AppNodeImpl.playData(ck);
+            pullVideo(ck, position);
+
+            //H PULL VIDEO EPISTREFEI PRIN EKTELESTEI O WORKER
+            //EPEIDH EINAI THREAD OPOTE PREPEI TO INTENT NA
+            //EKTELESTEI MESA STHN PULL VIDEO.
 
             //Intent intent = new Intent(mContext, playVideo.class);
             //mContext.startActivity(intent);
         });
 
         return convertView;
+    }
+
+    public void pullVideo(ChannelKey channelKey, int position){
+        String action = "Pull Video";
+
+        Data data = new Data.Builder()
+                .putString("ChannelName", channelKey.getChannelName())
+                .putInt("videoID", channelKey.getVideoID())
+                .putString("ACTION", action)
+                .build();
+
+        OneTimeWorkRequest uploadRequest = new OneTimeWorkRequest.Builder(UserWorker.class)
+                .setInputData(data)
+                .build();
+
+        String uniqueWorkName = "Pull Video" + Integer.toString(failed_attempts);
+        failed_attempts += 1;
+
+        WorkManager.getInstance(mContext)
+                .enqueueUniqueWork(uniqueWorkName, ExistingWorkPolicy.REPLACE, uploadRequest);
+
+        WorkManager.getInstance(mContext).getWorkInfoByIdLiveData(uploadRequest.getId())
+                .observe((LifecycleOwner) mContext, workInfo -> {
+                    Log.d("State", workInfo.getState().name());
+                    if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                        Toast.makeText(mContext, "Successful pull video",
+                                Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(mContext, PlayVideo.class);
+                        Log.d("CONTEXT", mContext.getClass().getSimpleName());
+                        String filepath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() +
+                                "/Fetched Videos/" + videoList.get(position).getChannelName() + "_" +
+                                videoList.get(position).getVideoID() + ".mp4";
+                        Bundle bundle = new Bundle();
+                        bundle.putString("filepath", filepath);
+                        bundle.putString("context", mContext.getClass().getSimpleName());
+                        intent.putExtras(bundle);
+
+                        mContext.startActivity(intent);
+
+                    } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                        Toast.makeText(mContext,
+                                "Failed pull video", Toast.LENGTH_SHORT).show();
+                        Log.d("Status", "Status failed");
+                    }
+                });
     }
 
     @Override

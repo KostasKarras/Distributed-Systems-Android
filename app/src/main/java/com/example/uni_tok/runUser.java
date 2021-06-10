@@ -1,6 +1,7 @@
 package com.example.uni_tok;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -45,6 +46,7 @@ public class runUser extends AppCompatActivity {
     ImageButton search_button;
     ImageButton upload_button;
     EditText search_bar;
+    public static Context context;
 
     SharedPreferences sharedPreferences;
     int failed_attempts;
@@ -55,6 +57,8 @@ public class runUser extends AppCompatActivity {
         Log.d("CREATION", "I am in onCreate of runUser!\n");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_page_activity);
+
+        context = getApplicationContext();
 
         sharedPreferences = getApplicationContext()
                 .getSharedPreferences("appdata", MODE_PRIVATE);

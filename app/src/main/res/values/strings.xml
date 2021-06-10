@@ -4,6 +4,7 @@
     <string name="submitButton">Submit</string>
     <string name="channelText">Channel Name</string>
     <string name="channel">CHANNEL:</string>
+    <string name="backText">Back</string>
     <string name="title_activity_run_user">runUser</string>
     <string name="tab_text_1">Tab 1</string>
     <string name="tab_text_2">Tab 2</string>
