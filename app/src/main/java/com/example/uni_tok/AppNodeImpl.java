@@ -69,9 +69,9 @@ public class AppNodeImpl {
 
     public static void init(int port) {
         try {
-            serverSocket = new ServerSocket(port, 60, InetAddress.getLocalHost());
-            Log.d("LOCAL HOST", InetAddress.getLocalHost().toString());
-            Log.d("SERVER SOCKET 1", serverSocket.getLocalSocketAddress().toString());
+            //serverSocket = new ServerSocket(port, 60, InetAddress.getLocalHost());
+            //serverSocket = new ServerSocket(port, 60, InetAddress.getLocalHost());
+            serverSocket = new ServerSocket(port, 60, InetAddress.getByName("10.0.2.15"));
 
             File uploadedDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + "/Uploaded Videos/");
             uploadedDir.mkdirs();
@@ -120,9 +120,10 @@ public class AppNodeImpl {
         init(4960);
         String string_socket = serverSocket.getLocalSocketAddress().toString().split("/")[1];
         String[] array = string_socket.split(":");
-        InetAddress hear_ip = InetAddress.getByName(array[0]);
-        //int hear_port = Integer.parseInt(array[1]);
-        int hear_port = 7800;
+        InetAddress hear_ip = InetAddress.getByName("127.0.0.1");
+        int hear_port = 5529;
+        Log.d("HEAR IP", hear_ip.toString());
+        Log.d("HEAR PORT", Integer.toString(hear_port));
         hear_address = new InetSocketAddress(hear_ip, hear_port);
         objectOutputStream.writeObject(hear_address);
         objectOutputStream.flush();
@@ -254,12 +255,14 @@ public class AppNodeImpl {
             }
         } catch(IOException e) {
             /* Crash the server if IO fails. Something bad has happened. */
+            Log.d("SERVER SOCKET", "CONNECTION ACCEPT FAIL");
             throw new RuntimeException("Could not create ServerSocket ", e);
         } finally {
             try {
+                Log.d("Socket State", "Closed");
                 serverSocket.close();
             } catch (IOException | NullPointerException ioException) {
-                ioException.printStackTrace();
+                Log.d("Exception : ", ioException.getMessage());
             }
         }
     }

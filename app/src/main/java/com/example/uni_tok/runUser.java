@@ -64,7 +64,7 @@ public class runUser extends AppCompatActivity {
                 .getSharedPreferences("appdata", MODE_PRIVATE);
 
         search_bar = (EditText)findViewById(R.id.search_bar);
-
+        /*
         OneTimeWorkRequest oneTimeRequest = new OneTimeWorkRequest.Builder(ServerWorker.class)
                 .build();
 
@@ -76,6 +76,14 @@ public class runUser extends AppCompatActivity {
         SearchVideoAdapter adapter = new SearchVideoAdapter(this, AppNodeImpl.getHomePageVideoList());
         listView.setAdapter(adapter);
 
+         */
+
+        Thread thread = new Thread() {
+            public void run() {
+                AppNodeImpl.handleRequest();
+            }
+        };
+        thread.start();
         failed_attempts = 0;
     }
 
