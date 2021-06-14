@@ -178,17 +178,48 @@ public class AppNodeImpl {
      * channel or hashtag we are subscribed to uploads a video
      */
     public synchronized static void refreshHomePage(VideoInformation vi) {
-        homePageVideoList.add(0, vi);
-        if (homePageVideoList.size() > 10) {
-            homePageVideoList.remove(homePageVideoList.size()-1);
+
+        ArrayList<ChannelKey> keys = new ArrayList<>();
+        for (VideoInformation info : homePageVideoList) {
+            keys.add(info.getChannelKey());
+        }
+
+        /*
+        boolean exists = false;
+        for (VideoInformation info : homePageVideoList) {
+            if (vi.getChannelKey().equals(info.getChannelKey())) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
+
+         */
+
+        if (!keys.contains(vi.getChannelKey())) {
+            homePageVideoList.add(0, vi);
+            if (homePageVideoList.size() > 10) {
+                homePageVideoList.remove(homePageVideoList.size() - 1);
+            }
         }
     }
 
     public synchronized static void refreshHomePage(ArrayList<VideoInformation> vi_list) {
-        homePageVideoList.addAll(vi_list);
+
+        ArrayList<ChannelKey> keys = new ArrayList<>();
+        for (VideoInformation info : homePageVideoList) {
+            keys.add(info.getChannelKey());
+        }
+
+        for (VideoInformation vi : vi_list) {
+            if (!keys.contains(vi.getChannelKey())) {
+                homePageVideoList.add(vi);
+            }
+        }
+
         Collections.sort(homePageVideoList);
-        while(homePageVideoList.size() > 10) {
-            homePageVideoList.remove(homePageVideoList.size()-1);
+        while (homePageVideoList.size() > 10) {
+            homePageVideoList.remove(homePageVideoList.size() - 1);
         }
     }
 
