@@ -46,7 +46,9 @@ public class ServeRequest extends Thread {
                     // DIMITRIS
                     ArrayList<VideoInformation> videoList = new ArrayList<>();
                     for (ChannelKey ck : AppNodeImpl.getChannelVideoMap().keySet()) {
-                        VideoInformation vi = new VideoInformation(ck, AppNodeImpl.getChannelVideoMap().get(ck), AppNodeImpl.getChannelHashtagsMap().get(ck));
+                        VideoInformation vi = new VideoInformation(ck, AppNodeImpl.getChannelVideoMap().get(ck),
+                                AppNodeImpl.getChannelHashtagsMap().get(ck),
+                                AppNodeImpl.getChannel().getVideoFile_byID(ck.getVideoID()).getThumbnail());
                         videoList.add(vi);
                     }
                     objectOutputStream.writeObject(videoList);
@@ -55,7 +57,8 @@ public class ServeRequest extends Thread {
                     //HashMap<ChannelKey, String> videoList = AppNodeImpl.getHashtagVideoMap(choice);
                     ArrayList<VideoInformation> videoList = new ArrayList<>();
                     for (ChannelKey ck : AppNodeImpl.getHashtagVideoMap(choice).keySet()) {
-                        VideoInformation vi = new VideoInformation(ck, AppNodeImpl.getChannelVideoMap().get(ck), AppNodeImpl.getChannelHashtagsMap().get(ck));
+                        VideoInformation vi = new VideoInformation(ck, AppNodeImpl.getChannelVideoMap().get(ck), AppNodeImpl.getChannelHashtagsMap().get(ck),
+                                AppNodeImpl.getChannel().getVideoFile_byID(ck.getVideoID()).getThumbnail());
                         videoList.add(vi);
                     }
                     objectOutputStream.writeObject(videoList);

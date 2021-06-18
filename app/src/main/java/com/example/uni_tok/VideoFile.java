@@ -15,12 +15,14 @@ public class VideoFile {
     private int videoID;
     private String videoName;
     private Date date;
+    private byte[] thumbnail;
 
     /** Constructor */
-    public VideoFile (String filepath, ArrayList<String> associatedHashtags, String videoName) {
+    public VideoFile (String filepath, ArrayList<String> associatedHashtags, String videoName, byte[] thumbnail) {
         this.filepath = filepath;
         this.associatedHashtags = associatedHashtags;
         this.videoName = videoName;
+        this.thumbnail = thumbnail;
         date = new Date();
     }
 
@@ -78,6 +80,10 @@ public class VideoFile {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public byte[] getThumbnail(){
+        return this.thumbnail;
     }
 
     //    public void setVideoName(String videoName) {

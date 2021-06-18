@@ -117,11 +117,11 @@ public class AppNodeImpl {
         objectOutputStream.flush();
 
         //SEND SOCKET ADDRESS FOR CONNECTIONS
-        init(4960);
+        init(4960);//4960
         String string_socket = serverSocket.getLocalSocketAddress().toString().split("/")[1];
         String[] array = string_socket.split(":");
         InetAddress hear_ip = InetAddress.getByName("127.0.0.1");
-        int hear_port = 5529;
+        int hear_port = 5529;//5529
         Log.d("HEAR IP", hear_ip.toString());
         Log.d("HEAR PORT", Integer.toString(hear_port));
         hear_address = new InetSocketAddress(hear_ip, hear_port);
@@ -258,8 +258,8 @@ public class AppNodeImpl {
 
     // --------------- END OF MICHALIS CHANGES -------------- //
 
-    public static boolean Upload(String path, ArrayList<String> associatedHashtags, String videoName){
-        VideoFile videoFile = new VideoFile(path, associatedHashtags, videoName);
+    public static boolean Upload(String path, ArrayList<String> associatedHashtags, String videoName, byte[] thumbnail){
+        VideoFile videoFile = new VideoFile(path, associatedHashtags, videoName, thumbnail);
 
         ChannelKey channelKey = new ChannelKey((AppNodeImpl.getChannel()).getChannelName(),
                 AppNodeImpl.getChannel().getCounterVideoID()).setDate(videoFile.getDate());
@@ -270,7 +270,8 @@ public class AppNodeImpl {
                 AppNodeImpl.notifyBrokersForHashTags(item.getKey(), item.getValue());
         }
 
-        AppNodeImpl.notifyBrokersForChanges(channelKey, associatedHashtags, videoName, associatedHashtags, true);
+        AppNodeImpl.notifyBrokersForChanges(channelKey, associatedHashtags, videoName, associatedHashtags, true,
+                thumbnail);
 
         return true;
     }
@@ -351,7 +352,8 @@ public class AppNodeImpl {
             ChannelKey channelKey = new ChannelKey(channel.getChannelName(), video.getVideoID());
             channelKey.setDate(video.getDate());
 
-            notifyBrokersForChanges(channelKey, hashtags, video.getVideoName(), video.getAssociatedHashtags(), false);
+            notifyBrokersForChanges(channelKey, hashtags, video.getVideoName(), video.getAssociatedHashtags(), false,
+                    video.getThumbnail());
         }
         return true;
     }
@@ -457,7 +459,8 @@ public class AppNodeImpl {
         }
     }
 
-    public static void notifyBrokersForChanges(ChannelKey channelKey, ArrayList<String> hashtags, String title, ArrayList<String> associatedHashtags, boolean action) {
+    public static void notifyBrokersForChanges(ChannelKey channelKey, ArrayList<String> hashtags, String title,
+                                               ArrayList<String> associatedHashtags, boolean action, byte[] thumbnail) {
 
         if (!hashtags.isEmpty()) {
             for (String hashtag : hashtags) {
@@ -480,6 +483,9 @@ public class AppNodeImpl {
                     objectOutputStream.flush();
 
                     objectOutputStream.writeObject(associatedHashtags);
+                    objectOutputStream.flush();
+
+                    objectOutputStream.writeObject(thumbnail);
                     objectOutputStream.flush();
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -1,7 +1,5 @@
 package com.example.uni_tok;
 
-import android.util.Log;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,13 +9,14 @@ public class VideoInformation implements Serializable, Comparable<VideoInformati
     private String videoTitle;
     private ArrayList<String> associatedHashtags;
     private Date date;
+    private byte [] thumbnail;
 
-    public VideoInformation(ChannelKey ck, String videoTitle, ArrayList associatedHashtags) {
+    public VideoInformation(ChannelKey ck, String videoTitle, ArrayList associatedHashtags, byte [] thumbnail) {
         this.ck = ck;
         this.videoTitle = videoTitle;
         this.associatedHashtags = associatedHashtags;
+        this.thumbnail = thumbnail;
         date = ck.getDate();
-        //Log.d("DATE", date.toString());
     }
 
     public ChannelKey getChannelKey() {
@@ -44,7 +43,9 @@ public class VideoInformation implements Serializable, Comparable<VideoInformati
         return date;
     }
 
-    public int compareTo(VideoInformation vi) {
-        return this.getDate().compareTo(vi.getDate()) * (-1);
+    public byte [] getThumbnail(){
+        return this.thumbnail;
     }
+
+    public int compareTo(VideoInformation vi) { return this.getDate().compareTo(vi.getDate()) * (-1); }
 }

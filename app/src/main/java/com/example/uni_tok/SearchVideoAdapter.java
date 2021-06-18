@@ -3,6 +3,8 @@ package com.example.uni_tok;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,9 +50,14 @@ public class SearchVideoAdapter extends BaseAdapter {
         TextView videoName = (TextView) convertView.findViewById(R.id.searchVideoTitle);
         TextView channelName = (TextView) convertView.findViewById(R.id.searchChannelName);
         TextView hashtags = (TextView) convertView.findViewById(R.id.searchHashtags);
+        ImageView imageView = (ImageView) convertView.findViewById(R.id.thumbnail);
+
+        byte [] thumbnailInBytes = videoList.get(position).getThumbnail();
+        Bitmap thumbnail = BitmapFactory.decodeByteArray(thumbnailInBytes, 0, thumbnailInBytes.length);
 
         videoName.setText(videoList.get(position).getTitle());
         channelName.setText(videoList.get(position).getChannelName());
+        imageView.setImageBitmap(thumbnail);
 
         StringBuilder stringBuilder = new StringBuilder();
         for (String hashtag : videoList.get(position).getHashtags())

@@ -3,6 +3,8 @@ package com.example.uni_tok;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.shapes.PathShape;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.webkit.HttpAuthHandler;
@@ -12,10 +14,12 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,6 +44,7 @@ public class UserWorker extends Worker {
         String [] hashtags;
         String [] hashtagsAdded;
         String [] hashtagsRemoved;
+        byte [] thumbnail;
         int videoID;
         ArrayList<String> associatedHashtags = new ArrayList<>();
         ArrayList<String> addedAssociatedHashtags = new ArrayList<>();
@@ -93,9 +98,20 @@ public class UserWorker extends Worker {
                     path = getInputData().getString("path");
                     videoName = getInputData().getString("videoName");
                     hashtags = getInputData().getStringArray("associatedHashtags");
+
+                    //thumbnail-start
+                    Uri videoUri = Uri.parse(path);
+                    MediaMetadataRetriever mMMR = new MediaMetadataRetriever();
+                    mMMR.setDataSource(getApplicationContext(), videoUri);
+                    Bitmap thumbnailImage = mMMR.getFrameAtTime(20000000);
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    thumbnailImage.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                    thumbnail = byteArrayOutputStream.toByteArray();
+                    //thumbnail-end
+
                     if (hashtags != null) {
                         Collections.addAll(associatedHashtags, hashtags);
-                        boolean successful_upload = AppNodeImpl.Upload(path, associatedHashtags, videoName);
+                        boolean successful_upload = AppNodeImpl.Upload(path, associatedHashtags, videoName, thumbnail);
                         if (successful_upload) return Result.success();
                     }
                     break;
