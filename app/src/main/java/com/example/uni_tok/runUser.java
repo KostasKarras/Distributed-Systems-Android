@@ -68,11 +68,9 @@ public class runUser extends AppCompatActivity {
         /*
         OneTimeWorkRequest oneTimeRequest = new OneTimeWorkRequest.Builder(ServerWorker.class)
                 .build();
-
         WorkManager.getInstance(this)
                 .enqueueUniqueWork("Handle Incoming Requests",
                         ExistingWorkPolicy.KEEP, oneTimeRequest);
-
          */
 
         ListView listView = (ListView) findViewById(R.id.homePageVideoList);
@@ -108,8 +106,8 @@ public class runUser extends AppCompatActivity {
                 .build();
 
         OneTimeWorkRequest topicRequest = new OneTimeWorkRequest.Builder(UserWorker.class)
-                                                                .setInputData(data)
-                                                                .build();
+                .setInputData(data)
+                .build();
 
         String uniqueWorkName = "Topic"+ Integer.toString(failed_attempts);
         failed_attempts += 1;

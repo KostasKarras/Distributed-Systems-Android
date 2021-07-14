@@ -123,7 +123,7 @@ public class UserWorker extends Worker {
                         Collections.addAll(addedAssociatedHashtags, hashtagsAdded);
                         if (videoID != -1){
                             boolean successful_addedHashtags = AppNodeImpl.
-                                addHashTag(AppNodeImpl.getChannel().getVideoFile_byID(videoID), addedAssociatedHashtags);
+                                    addHashTag(AppNodeImpl.getChannel().getVideoFile_byID(videoID), addedAssociatedHashtags);
                             if (successful_addedHashtags) return Result.success();
                         } else {
                             Log.d("Error", "Something Bad happened!");
@@ -186,7 +186,7 @@ public class UserWorker extends Worker {
 
         }
         catch (InterruptedException ie) {
-                Log.d("IE", ie.getMessage());
+            Log.d("IE", ie.getMessage());
         }
 
         return Result.failure();

@@ -117,11 +117,11 @@ public class AppNodeImpl {
         objectOutputStream.flush();
 
         //SEND SOCKET ADDRESS FOR CONNECTIONS
-        init(4960);//4960
+        init(4950);//4960
         String string_socket = serverSocket.getLocalSocketAddress().toString().split("/")[1];
         String[] array = string_socket.split(":");
         InetAddress hear_ip = InetAddress.getByName("127.0.0.1");
-        int hear_port = 5529;//5529
+        int hear_port = 5519;//5529
         Log.d("HEAR IP", hear_ip.toString());
         Log.d("HEAR PORT", Integer.toString(hear_port));
         hear_address = new InetSocketAddress(hear_ip, hear_port);
@@ -193,7 +193,6 @@ public class AppNodeImpl {
             }
         }
         if (!exists) {
-
          */
 
         if (!keys.contains(vi.getChannelKey())) {
@@ -325,7 +324,7 @@ public class AppNodeImpl {
         }
 
 
-       // new RequestHandler(serverSocket).start();
+        // new RequestHandler(serverSocket).start();
 
         runUser();
 
@@ -798,44 +797,38 @@ public class AppNodeImpl {
         return channel.getChannelVideoNamesByHashtag(hashtag);
     }
 
-/*
-    //CHANGES HAVE BEEN MADE
-    class RequestHandler extends Thread {
-
-        public ServerSocket serverSocket;
-        public Socket connectionSocket;
-
-        public RequestHandler(ServerSocket serverSocket) {
-            this.serverSocket = serverSocket;
-        }
-
-        public void run() {
-
-            try {
-                while(true) {
-                    connectionSocket = serverSocket.accept();
-                    new ServeRequest(connectionSocket).start();
-                }
-            } catch(IOException e) {
-                //Crash the server if IO fails. Something bad has happened.
-                throw new RuntimeException("Could not create ServerSocket ", e);
-            } finally {
+    /*
+        //CHANGES HAVE BEEN MADE
+        class RequestHandler extends Thread {
+            public ServerSocket serverSocket;
+            public Socket connectionSocket;
+            public RequestHandler(ServerSocket serverSocket) {
+                this.serverSocket = serverSocket;
+            }
+            public void run() {
                 try {
-                    serverSocket.close();
-                } catch (IOException | NullPointerException ioException) {
-                    ioException.printStackTrace();
+                    while(true) {
+                        connectionSocket = serverSocket.accept();
+                        new ServeRequest(connectionSocket).start();
+                    }
+                } catch(IOException e) {
+                    //Crash the server if IO fails. Something bad has happened.
+                    throw new RuntimeException("Could not create ServerSocket ", e);
+                } finally {
+                    try {
+                        serverSocket.close();
+                    } catch (IOException | NullPointerException ioException) {
+                        ioException.printStackTrace();
+                    }
                 }
             }
         }
-    }
-    */
+        */
 /*
     class ServeRequest extends Thread {
-
         private Socket socket;
         private ObjectInputStream objectInputStream;
         private ObjectOutputStream objectOutputStream;
-
         ServeRequest(Socket s) {
             socket = s;
             try {
@@ -847,13 +840,9 @@ public class AppNodeImpl {
         }
 6
         public void run() {
-
             try{
-
                 int option = (int) objectInputStream.readObject();
-
                 if (option == 1) { //Pull List
-
                     //Choice between sending whole channel or files based on hashtag
                     String choice = (String) objectInputStream.readObject();
                     System.out.println(choice);
@@ -865,9 +854,7 @@ public class AppNodeImpl {
                         HashMap<ChannelKey, String> videoList = getHashtagVideoMap(choice);
                         objectOutputStream.writeObject(videoList);
                     }
-
                 } else if (option == 2) { //Pull Video
-
                     ChannelKey channelKey = (ChannelKey) objectInputStream.readObject();
                     try {
                         push(channelKey.getVideoID(), objectInputStream, objectOutputStream);
@@ -875,12 +862,9 @@ public class AppNodeImpl {
                         objectOutputStream.writeObject(false);
                         objectOutputStream.flush();
                     }
-
                 } else if (option == 3) {
-
                     String notificationMessage = (String) objectInputStream.readObject();
                     System.out.println(notificationMessage);
-
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -1178,30 +1162,23 @@ public class AppNodeImpl {
                 String videoTitle;
                 String hashtag;
                 ArrayList<String> associatedHashtags = new ArrayList<>();
-
                 System.out.print("Please give the path of the video you want to upload: ");
                 filepath = in.nextLine();
-
                 System.out.print("Title of the video: ");
                 videoTitle = in.nextLine();
-
                 while (true) {
                     System.out.print("Do you want to add a hashtag to your video? (y/n) ");
                     String answer = in.nextLine();
                     if (answer.equals("n")) {
                         break;
                     }
-
                     System.out.print("Please give a hashtag for the video: ");
                     hashtag = in.nextLine();
-
                     if (!associatedHashtags.contains(hashtag)) {
                         associatedHashtags.add(hashtag);
                     }
                 }
-
                 VideoFile video = new VideoFile(filepath, associatedHashtags, videoTitle);
-
                 HashMap<String, String> notificationHashtags = channel.addVideoFile(video);
                 boolean notExists = true;
                 try {
@@ -1215,19 +1192,16 @@ public class AppNodeImpl {
                     e.printStackTrace();
                     notExists = false;
                 }
-
                 if (notExists) {
                     if (!notificationHashtags.isEmpty()) {
                         for (Map.Entry<String, String> item : notificationHashtags.entrySet())
                             notifyBrokersForHashTags(item.getKey(), item.getValue());
                     }
-
                     ChannelKey channelKey = new ChannelKey(channel.getChannelName(), video.getVideoID());
                     notifyBrokersForChanges(channelKey, associatedHashtags, videoTitle, associatedHashtags, true);
                 } else {
                     channel.removeVideoFile(video);
                 }
-
  */
             }
 

@@ -48,7 +48,7 @@ public class SearchActivity extends AppCompatActivity {
         context = getApplicationContext();
 
         sharedPreferences = getApplicationContext()
-                           .getSharedPreferences("appdata", MODE_PRIVATE);
+                .getSharedPreferences("appdata", MODE_PRIVATE);
         search_bar = (EditText)findViewById(R.id.search_bar);
         subscribeButton = (Button)findViewById(R.id.subscribeButton);
 
@@ -108,38 +108,38 @@ public class SearchActivity extends AppCompatActivity {
         if (button.getText().equals("SUBSCRIBE")) {
 
             WorkManager.getInstance(this).getWorkInfoByIdLiveData(subscriptionRequest.getId())
-                .observe(this, workInfo -> {
-                    Log.d("State", workInfo.getState().name());
-                    if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                        button.setBackgroundColor(ContextCompat.getColor(this, R.color.gray));
-                        button.setText(R.string.subscribedText);
-                        Toast.makeText(getApplicationContext(), "Successful subscription",
-                                       Toast.LENGTH_SHORT).show();
+                    .observe(this, workInfo -> {
+                        Log.d("State", workInfo.getState().name());
+                        if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                            button.setBackgroundColor(ContextCompat.getColor(this, R.color.gray));
+                            button.setText(R.string.subscribedText);
+                            Toast.makeText(getApplicationContext(), "Successful subscription",
+                                    Toast.LENGTH_SHORT).show();
 
-                    } else if (workInfo.getState() == WorkInfo.State.FAILED) {
-                        Toast.makeText(getApplicationContext(),
-                                  "Failed subscription", Toast.LENGTH_SHORT).show();
-                        Log.d("Status", "Status failed");
-                    }
-                });
+                        } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                            Toast.makeText(getApplicationContext(),
+                                    "Failed subscription", Toast.LENGTH_SHORT).show();
+                            Log.d("Status", "Status failed");
+                        }
+                    });
 
         }
         else {
 
             WorkManager.getInstance(this).getWorkInfoByIdLiveData(subscriptionRequest.getId())
-                .observe(this, workInfo -> {
-                    Log.d("State", workInfo.getState().name());
-                    if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                        button.setBackgroundColor(ContextCompat.getColor(this, R.color.app_color));
-                        button.setText(R.string.subscribeText);
-                        Toast.makeText(getApplicationContext(), "Successfully unsubscribed",
-                                       Toast.LENGTH_SHORT).show();
-                    } else if (workInfo.getState() == WorkInfo.State.FAILED) {
-                        Toast.makeText(getApplicationContext(), "Failed to unsubscribe",
-                                Toast.LENGTH_SHORT).show();
-                        Log.d("Status", "Status failed");
-                    }
-                });
+                    .observe(this, workInfo -> {
+                        Log.d("State", workInfo.getState().name());
+                        if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                            button.setBackgroundColor(ContextCompat.getColor(this, R.color.app_color));
+                            button.setText(R.string.subscribeText);
+                            Toast.makeText(getApplicationContext(), "Successfully unsubscribed",
+                                    Toast.LENGTH_SHORT).show();
+                        } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                            Toast.makeText(getApplicationContext(), "Failed to unsubscribe",
+                                    Toast.LENGTH_SHORT).show();
+                            Log.d("Status", "Status failed");
+                        }
+                    });
 
         }
 

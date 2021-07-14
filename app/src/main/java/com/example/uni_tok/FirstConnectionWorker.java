@@ -31,7 +31,7 @@ public class FirstConnectionWorker extends Worker {
             TimeUnit.SECONDS.sleep(1);
 
 //            AppNodeImpl.init(4960);
-            
+
             String addressKeeperIP = getInputData().getString("AddressKeeperIP");
             SocketAddress sockAddress = new InetSocketAddress(InetAddress.getByName(addressKeeperIP),
                     4000);

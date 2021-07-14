@@ -41,7 +41,7 @@ public class newChannel extends AppCompatActivity {
         setContentView(R.layout.activity_new_channel);
 
         sharedPreferences = getApplicationContext()
-                           .getSharedPreferences("appdata", MODE_PRIVATE);
+                .getSharedPreferences("appdata", MODE_PRIVATE);
 
         channelName = (EditText) findViewById(R.id.ChannelName);
 
@@ -54,24 +54,21 @@ public class newChannel extends AppCompatActivity {
     }
 /*
     public void runUser(){
-
         //STORE CHANNEL NAME
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("channelKey", channelName.getText().toString() );
         editor.apply();
-
         Intent intent = new Intent(this, runUser.class);
         startActivity(intent);
         finish();
     }
-
  */
 
     public void runUser() {
 
         data = new Data.Builder()
-                            .putString("ChannelName", channelName.getText().toString())
-                            .build();
+                .putString("ChannelName", channelName.getText().toString())
+                .build();
 
         oneTimeRequest = new OneTimeWorkRequest.Builder(SetChannelBrokerWorker.class)
                 .keepResultsForAtLeast(1, TimeUnit.SECONDS)
