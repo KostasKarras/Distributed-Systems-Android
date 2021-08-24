@@ -96,7 +96,7 @@ public class SearchVideoAdapter extends BaseAdapter {
                     Log.d("State", workInfo.getState().name());
                     if ( workInfo.getState() == WorkInfo.State.SUCCEEDED) {
 
-                        Intent intent = new Intent(context, playVideo.class);
+                        Intent intent = new Intent(context, PlayVideo.class);
 
                         String filepath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
                                 .toString() + "/Fetched Videos/" + video.getChannelName() + "_" +

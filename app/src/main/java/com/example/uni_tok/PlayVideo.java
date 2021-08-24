@@ -21,7 +21,7 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
-public class playVideo extends AppCompatActivity {
+public class PlayVideo extends AppCompatActivity {
 
     private EditText search_bar;
     private VideoView myVideo;
