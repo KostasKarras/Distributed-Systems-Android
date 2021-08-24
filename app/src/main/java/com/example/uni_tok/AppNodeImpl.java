@@ -117,11 +117,11 @@ public class AppNodeImpl {
         objectOutputStream.flush();
 
         //SEND SOCKET ADDRESS FOR CONNECTIONS
-        init(4960);//4960
+        init(4950);//4960
         String string_socket = serverSocket.getLocalSocketAddress().toString().split("/")[1];
         String[] array = string_socket.split(":");
         InetAddress hear_ip = InetAddress.getByName("127.0.0.1");
-        int hear_port = 5529;//5529
+        int hear_port = 5519;//5529
         Log.d("HEAR IP", hear_ip.toString());
         Log.d("HEAR PORT", Integer.toString(hear_port));
         hear_address = new InetSocketAddress(hear_ip, hear_port);
@@ -485,7 +485,7 @@ public class AppNodeImpl {
                     objectOutputStream.writeObject(associatedHashtags);
                     objectOutputStream.flush();
 
-                    objectOutputStream.writeObject(thumbnail);
+                    objectOutputStream.write(thumbnail);
                     objectOutputStream.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -514,7 +514,7 @@ public class AppNodeImpl {
                 objectOutputStream.writeObject(associatedHashtags);
                 objectOutputStream.flush();
 
-                objectOutputStream.writeObject(thumbnail);
+                objectOutputStream.write(thumbnail);
                 objectOutputStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();
