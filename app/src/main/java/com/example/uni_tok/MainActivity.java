@@ -1,34 +1,18 @@
 package com.example.uni_tok;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.lifecycle.Observer;
-import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
-
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,13 +33,7 @@ public class MainActivity extends AppCompatActivity {
         failed_attempts = 0;
 
     }
-    /*
-        public void newChannel(){
-            Intent intent = new Intent(this, newChannel.class);
-            startActivity(intent);
-            finish();
-        }
-     */
+
     public void newChannel() {
 
         Data data = new Data.Builder().putString("AddressKeeperIP", IP.getText().toString())
@@ -90,9 +68,5 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 });
-
-
     }
-
-
 }

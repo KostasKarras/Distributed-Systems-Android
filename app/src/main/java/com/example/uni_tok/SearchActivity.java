@@ -10,11 +10,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -24,9 +22,6 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -56,7 +51,6 @@ public class SearchActivity extends AppCompatActivity {
         String topic = sharedPreferences.getString("searchKey", "None");
         relatedTopic.setText(topic);
 
-        // --------------- MICHALIS CHANGES -------------- //
         boolean is_subscribed;
         if (topic.charAt(0) == '#') {
             is_subscribed = AppNodeImpl.getSubscribedToHashtags().contains(topic);
@@ -70,16 +64,6 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         failed_attempts = 0;
-
-        // --------------- END OF MICHALIS CHANGES -------------- //
-
-        /**We need to make a new VideoAdapter who is going to take as parameters
-         * 1)context (this)
-         * 2)hashmap (AppNodeImpl.getSearchTopicVideoList())
-         * Now VideoAdapter takes context and Arraylist.
-         * In my opinion it would be better to make a new VideoAdapter (aka VideoAdapterForConsumer)
-         * and not change the existing.
-         * */
 
         ListView listView = (ListView) findViewById(R.id.listViewSearchActivity);
         SearchVideoAdapter adapter = new SearchVideoAdapter(this, AppNodeImpl.getSearchTopicVideoList());
@@ -123,8 +107,7 @@ public class SearchActivity extends AppCompatActivity {
                         }
                     });
 
-        }
-        else {
+        } else {
 
             WorkManager.getInstance(this).getWorkInfoByIdLiveData(subscriptionRequest.getId())
                     .observe(this, workInfo -> {
@@ -147,10 +130,6 @@ public class SearchActivity extends AppCompatActivity {
 
     public void channelActivity(View v) {
         Intent intent = new Intent(this, ChannelActivity.class);
-
-        //To check the activity in the channel
-        intent.putExtra("upload", false);
-
         startActivity(intent);
     }
 

@@ -1,36 +1,25 @@
 package com.example.uni_tok;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkContinuation;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import java.sql.Time;
 import java.util.concurrent.TimeUnit;
-
-import kotlin.coroutines.Continuation;
 
 public class newChannel extends AppCompatActivity {
 
     EditText channelName;
     Button submitButton;
     SharedPreferences sharedPreferences;
-
     OneTimeWorkRequest oneTimeRequest;
     WorkManager workManager;
     Data data;
@@ -52,17 +41,6 @@ public class newChannel extends AppCompatActivity {
 
         failed_attempts = 0;
     }
-/*
-    public void runUser(){
-        //STORE CHANNEL NAME
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("channelKey", channelName.getText().toString() );
-        editor.apply();
-        Intent intent = new Intent(this, runUser.class);
-        startActivity(intent);
-        finish();
-    }
- */
 
     public void runUser() {
 
@@ -104,7 +82,5 @@ public class newChannel extends AppCompatActivity {
                     }
 
                 });
-
     }
-
 }

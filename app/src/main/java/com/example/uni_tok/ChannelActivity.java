@@ -4,27 +4,14 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.LabeledIntent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.media.ThumbnailUtils;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -35,9 +22,6 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
-import java.util.ArrayList;
-import java.util.Set;
-
 public class ChannelActivity extends AppCompatActivity {
 
     EditText search_bar;
@@ -45,10 +29,8 @@ public class ChannelActivity extends AppCompatActivity {
     TextView channelName;
     SharedPreferences sharedPreferences;
     ListView lv;
-
     int failed_attempts = 0;
     static int failed_attempts_ = 0;
-
     private static final int REQUEST_PERMISSION_CODE = 1;
 
     @Override

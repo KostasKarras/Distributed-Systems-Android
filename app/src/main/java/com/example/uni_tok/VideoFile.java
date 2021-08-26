@@ -1,9 +1,8 @@
 package com.example.uni_tok;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -61,6 +60,14 @@ public class VideoFile {
         return this.videoName;
     }
 
+    public byte[] getThumbnail(){
+        return this.thumbnail;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
     /** Setters */
     public void addHashtag(String hashtag) {
         associatedHashtags.add(hashtag);
@@ -73,20 +80,4 @@ public class VideoFile {
     public void setVideoID(int videoID) {
         this.videoID = videoID;
     }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public byte[] getThumbnail(){
-        return this.thumbnail;
-    }
-
-    //    public void setVideoName(String videoName) {
-//        this.videoName = videoName;
-//    }
 }

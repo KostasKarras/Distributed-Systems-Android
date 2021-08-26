@@ -1,37 +1,20 @@
 package com.example.uni_tok;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.MediaController;
-import android.widget.Toast;
 import android.widget.VideoView;
-
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class UploadVideoActivity extends Activity {
 
     private static final int GALLERY_REQUEST_CODE = 2000;
-    private VideoView videoView;
-    private Button playButton;
     private MediaController media;
     private Uri video;
-    private ArrayAdapter<String> arrayAdapter;
     private EditText search_bar;
 
     @Override
@@ -45,7 +28,6 @@ public class UploadVideoActivity extends Activity {
         videoPicker.setAction(Intent.ACTION_GET_CONTENT);
         videoPicker.setType("video/*");
         startActivityForResult(Intent.createChooser(videoPicker, "Pick a video"), GALLERY_REQUEST_CODE);
-
     }
 
     @Override

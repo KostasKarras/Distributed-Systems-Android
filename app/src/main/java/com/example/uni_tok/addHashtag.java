@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -21,8 +20,6 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
-import java.util.ArrayList;
-
 public class addHashtag extends AppCompatActivity {
 
     private static final int REQUEST_PERMISSION_CODE = 1;
@@ -30,9 +27,7 @@ public class addHashtag extends AppCompatActivity {
     EditText search_bar;
     TextView hashtags;
     Button add;
-
     int videoID;
-
     SharedPreferences sharedPreferences;
     int failed_attempts;
 
@@ -158,7 +153,10 @@ public class addHashtag extends AppCompatActivity {
         }
     }
 
-    public void homeActivity(View v) {}
+    public void homeActivity(View v) {
+        Intent intent = new Intent(this, runUser.class);
+        startActivity(intent);
+    }
 
     public void exit(View v) {}
 }

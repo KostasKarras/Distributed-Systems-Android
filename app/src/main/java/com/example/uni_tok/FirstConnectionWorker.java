@@ -2,20 +2,13 @@ package com.example.uni_tok;
 
 import android.content.Context;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
-import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.sql.Time;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 public class FirstConnectionWorker extends Worker {
@@ -29,8 +22,6 @@ public class FirstConnectionWorker extends Worker {
     public Result doWork() {
         try {
             TimeUnit.SECONDS.sleep(1);
-
-//            AppNodeImpl.init(4960);
 
             String addressKeeperIP = getInputData().getString("AddressKeeperIP");
             SocketAddress sockAddress = new InetSocketAddress(InetAddress.getByName(addressKeeperIP),

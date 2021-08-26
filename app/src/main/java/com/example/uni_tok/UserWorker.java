@@ -2,24 +2,17 @@ package com.example.uni_tok;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.shapes.PathShape;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
-import android.webkit.HttpAuthHandler;
-
 import androidx.annotation.NonNull;
-import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -123,7 +116,8 @@ public class UserWorker extends Worker {
                         Collections.addAll(addedAssociatedHashtags, hashtagsAdded);
                         if (videoID != -1){
                             boolean successful_addedHashtags = AppNodeImpl.
-                                    addHashTag(AppNodeImpl.getChannel().getVideoFile_byID(videoID), addedAssociatedHashtags);
+                                    addHashTag(AppNodeImpl.getChannel().getVideoFile_byID(videoID),
+                                            addedAssociatedHashtags);
                             if (successful_addedHashtags) return Result.success();
                         } else {
                             Log.d("Error", "Something Bad happened!");
@@ -138,7 +132,8 @@ public class UserWorker extends Worker {
                         Collections.addAll(removedAssociatedHashtags, hashtagsRemoved);
                         if (videoID != -1){
                             boolean successful_addedHashtags = AppNodeImpl.
-                                    removeHashTag(AppNodeImpl.getChannel().getVideoFile_byID(videoID), removedAssociatedHashtags);
+                                    removeHashTag(AppNodeImpl.getChannel().getVideoFile_byID(videoID),
+                                            removedAssociatedHashtags);
                             if (successful_addedHashtags) return Result.success();
                         } else {
                             Log.d("Error", "Something Bad happened!");
@@ -151,8 +146,8 @@ public class UserWorker extends Worker {
                     if (videoID != -1){
                         VideoFile video = AppNodeImpl.getChannel().getVideoFile_byID(videoID);
                         HashMap<String, String> notificationHashtags = AppNodeImpl.getChannel().removeVideoFile(video);
-                        String filepath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString()
-                                + "/Uploaded Videos/" + video.getVideoName() + "_" + videoID + ".mp4";
+                        String filepath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+                                .toString() + "/Uploaded Videos/" + video.getVideoName() + "_" + videoID + ".mp4";
                         try {
                             File file = new File(filepath);
                             if (file.exists()) {
@@ -174,25 +169,20 @@ public class UserWorker extends Worker {
                     }
                     break;
 
-                //-----------------Kostas Start-----------------//
                 case "Pull Video":
                     channelName = getInputData().getString("ChannelName");
                     videoID = getInputData().getInt("videoID", -1);
                     boolean successful_pull = AppNodeImpl.playData(new ChannelKey(channelName, videoID));
                     if (successful_pull) return Result.success();
                     break;
-                //-----------------Kostas End-----------------//
             }
 
         }
         catch (InterruptedException ie) {
             Log.d("IE", ie.getMessage());
         }
-
         return Result.failure();
-
     }
-
 
     @Override
     public void onStopped() {

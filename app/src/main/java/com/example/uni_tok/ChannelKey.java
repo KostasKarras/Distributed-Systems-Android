@@ -1,4 +1,5 @@
 package com.example.uni_tok;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -47,8 +48,6 @@ public class ChannelKey implements Serializable {
     public int getVideoID() {
         return videoID;
     }
-
-    public void setVideoID(int id) {videoID = id;}
 
     public Date getDate() {
         return date;

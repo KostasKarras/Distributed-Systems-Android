@@ -1,13 +1,11 @@
 package com.example.uni_tok;
 
 import android.util.Log;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.NoSuchElementException;
 
 public class ServeRequest extends Thread {
@@ -42,8 +40,6 @@ public class ServeRequest extends Thread {
                 String choice = (String) objectInputStream.readObject();
                 System.out.println(choice);
                 if (choice.equals("CHANNEL")) {
-                    //HashMap<ChannelKey, String> videoList = AppNodeImpl.getChannelVideoMap();
-                    // DIMITRIS
                     ArrayList<VideoInformation> videoList = new ArrayList<>();
                     for (ChannelKey ck : AppNodeImpl.getChannelVideoMap().keySet()) {
                         VideoInformation vi = new VideoInformation(ck, AppNodeImpl.getChannelVideoMap().get(ck),
@@ -54,7 +50,6 @@ public class ServeRequest extends Thread {
                     objectOutputStream.writeObject(videoList);
                 }
                 else {
-                    //HashMap<ChannelKey, String> videoList = AppNodeImpl.getHashtagVideoMap(choice);
                     ArrayList<VideoInformation> videoList = new ArrayList<>();
                     for (ChannelKey ck : AppNodeImpl.getHashtagVideoMap(choice).keySet()) {
                         VideoInformation vi = new VideoInformation(ck, AppNodeImpl.getChannelVideoMap().get(ck), AppNodeImpl.getChannelHashtagsMap().get(ck),
@@ -77,13 +72,9 @@ public class ServeRequest extends Thread {
             } else if (option == 3) { //Notification Message
 
                 String notificationMessage = (String) objectInputStream.readObject();
-                //DIMITRIS
                 VideoInformation vi = (VideoInformation) objectInputStream.readObject();
                 AppNodeImpl.refreshHomePage(vi);
                 System.out.println(notificationMessage);
-                //Toast.makeText(getApplicationContext(), notificationMessage,
-                //        Toast.LENGTH_SHORT).show();
-
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

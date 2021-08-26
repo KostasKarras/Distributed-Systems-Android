@@ -4,26 +4,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class VideoAdapter extends BaseAdapter {
     private ArrayList<VideoFile> videoList;
@@ -102,7 +92,7 @@ public class VideoAdapter extends BaseAdapter {
 
     @Override
     public VideoFile getItem(int position) {
-        return videoList.get(position); //returns list item at the specified position
+        return videoList.get(position);
     }
 
     @Override

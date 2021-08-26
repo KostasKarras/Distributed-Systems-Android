@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -28,9 +27,7 @@ public class removeHashtag extends AppCompatActivity {
     EditText search_bar;
     TextView hashtags;
     Button remove;
-
     int videoID;
-
     SharedPreferences sharedPreferences;
     int failed_attempts;
 
@@ -156,7 +153,10 @@ public class removeHashtag extends AppCompatActivity {
         }
     }
 
-    public void homeActivity(View v) {}
+    public void homeActivity(View v) {
+        Intent intent = new Intent(this, runUser.class);
+        startActivity(intent);
+    }
 
     public void exit(View v) {}
 }

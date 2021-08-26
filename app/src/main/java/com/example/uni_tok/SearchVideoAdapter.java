@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -17,7 +14,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleOwner;
@@ -26,7 +22,6 @@ import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
-
 import java.util.ArrayList;
 
 public class SearchVideoAdapter extends BaseAdapter {
@@ -72,12 +67,9 @@ public class SearchVideoAdapter extends BaseAdapter {
             ChannelKey ck = getItem(position).getChannelKey();
             pullVideo(ck, position);
 
-            //H PULL VIDEO EPISTREFEI PRIN EKTELESTEI O WORKER
-            //EPEIDH EINAI THREAD OPOTE PREPEI TO INTENT NA
-            //EKTELESTEI MESA STHN PULL VIDEO.
-
-            //Intent intent = new Intent(mContext, playVideo.class);
-            //mContext.startActivity(intent);
+            //pullVideo returns before worker is executed
+            //because it is a thread. So intent must be
+            //inside pullVideo
         });
 
         return convertView;
@@ -110,8 +102,8 @@ public class SearchVideoAdapter extends BaseAdapter {
                                 Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(mContext, PlayVideo.class);
                         Log.d("CONTEXT", mContext.getClass().getSimpleName());
-                        String filepath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() +
-                                "/Fetched Videos/" + videoList.get(position).getChannelName() + "_" +
+                        String filepath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+                                .toString() + "/Fetched Videos/" + videoList.get(position).getChannelName() + "_" +
                                 videoList.get(position).getVideoID() + ".mp4";
                         Bundle bundle = new Bundle();
                         bundle.putString("filepath", filepath);
@@ -135,7 +127,7 @@ public class SearchVideoAdapter extends BaseAdapter {
 
     @Override
     public VideoInformation getItem(int position) {
-        return videoList.get(position); //returns list item at the specified position
+        return videoList.get(position);
     }
 
     @Override
