@@ -27,7 +27,7 @@ public class UploadVideoActivity extends Activity {
         Intent videoPicker = new Intent();
         videoPicker.setAction(Intent.ACTION_GET_CONTENT);
         videoPicker.setType("video/*");
-        startActivityForResult(Intent.createChooser(videoPicker, "Pick a video"), GALLERY_REQUEST_CODE);
+        startActivityForResult(videoPicker, GALLERY_REQUEST_CODE);
     }
 
     @Override

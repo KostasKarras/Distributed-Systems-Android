@@ -46,7 +46,14 @@ public class AppNodeImpl {
 
     public static void init(int port) {
         try {
-            serverSocket = new ServerSocket(port, 60, InetAddress.getByName("10.0.2.15"));
+            serverSocket = new ServerSocket(port, 60, InetAddress.getByName("0.0.0.0"));
+
+            /** IMPORTANT
+             * If I have to run the app in emulator
+             * I must uncomment the line
+             * 56 and comment the line 49 */
+
+             //serverSocket = new ServerSocket(port, 60, InetAddress.getByName("10.0.2.15"));
 
             File uploadedDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString() + "/Uploaded Videos/");
             uploadedDir.mkdirs();
@@ -93,12 +100,22 @@ public class AppNodeImpl {
 
         //SEND SOCKET ADDRESS FOR CONNECTIONS
         init(4960);//4960
-        String string_socket = serverSocket.getLocalSocketAddress().toString().split("/")[1];
-        String[] array = string_socket.split(":");
-        InetAddress hear_ip = InetAddress.getByName("127.0.0.1");
-        int hear_port = 5529;//5529
-        Log.d("HEAR IP", hear_ip.toString());
-        Log.d("HEAR PORT", Integer.toString(hear_port));
+
+        /** IMPORTANT
+         * If I have to run the app in emulator
+         * I must uncomment  the lines
+         * 109-115 and comment the lines 117-119 */
+
+//        String string_socket = serverSocket.getLocalSocketAddress().toString().split("/")[1];
+//        String[] array = string_socket.split(":");
+//        InetAddress hear_ip = InetAddress.getByName("127.0.0.1");
+//        int hear_port = 5529;//5529
+//        Log.d("HEAR IP", hear_ip.toString());
+//        Log.d("HEAR PORT", Integer.toString(hear_port));
+//        hear_address = new InetSocketAddress(hear_ip, hear_port);//do not forget to make the necessary redirections.
+
+        InetAddress hear_ip = InetAddress.getByName("192.168.2.6");//this is the phone IP address.
+        int hear_port = 4960;
         hear_address = new InetSocketAddress(hear_ip, hear_port);
         objectOutputStream.writeObject(hear_address);
         objectOutputStream.flush();
