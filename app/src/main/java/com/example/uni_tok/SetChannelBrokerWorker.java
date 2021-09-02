@@ -28,7 +28,7 @@ public class SetChannelBrokerWorker extends Worker {
             Log.d("ENTERED", "DO WORK");
             TimeUnit.SECONDS.sleep(1);
             channelName = getInputData().getString("ChannelName");
-            unique = AppNodeImpl.setChannelBroker(channelName);
+            unique = AppNodeImpl.setChannelBroker(channelName, getApplicationContext());
             Log.d("IS UNIQUE?", Boolean.toString(unique));
 
             if (!unique) return Result.failure();

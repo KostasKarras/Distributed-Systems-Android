@@ -1,6 +1,9 @@
 package com.example.uni_tok;
 
+import android.content.Context;
+import android.net.wifi.WifiManager;
 import android.os.Environment;
+import android.text.format.Formatter;
 import android.util.Log;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,14 +47,14 @@ public class AppNodeImpl {
     private static ArrayList<VideoInformation> searchVideoList = new ArrayList<>();
     private static ArrayList<VideoInformation> homePageVideoList  = new ArrayList<>();
 
-    public static void init(int port) {
+    public static void init(int port, String ip) {
         try {
-            serverSocket = new ServerSocket(port, 60, InetAddress.getByName("0.0.0.0"));
+            serverSocket = new ServerSocket(port, 60, InetAddress.getByName(ip));
 
             /** IMPORTANT
              * If I have to run the app in emulator
              * I must uncomment the line
-             * 56 and comment the line 49 */
+             * 59 and comment the line 52 */
 
              //serverSocket = new ServerSocket(port, 60, InetAddress.getByName("10.0.2.15"));
 
@@ -80,7 +83,7 @@ public class AppNodeImpl {
         brokerHashes = (TreeMap<Integer, SocketAddress>) objectInputStream.readObject();
     }
 
-    public static boolean setChannelBroker(String name) throws IOException, ClassNotFoundException {
+    public static boolean setChannelBroker(String name, Context context) throws IOException, ClassNotFoundException {
         boolean unique;
 
         //CHANNEL NAME
@@ -99,13 +102,17 @@ public class AppNodeImpl {
         objectOutputStream.flush();
 
         //SEND SOCKET ADDRESS FOR CONNECTIONS
-        init(4960);//4960
 
         /** IMPORTANT
          * If I have to run the app in emulator
          * I must uncomment  the lines
-         * 109-115 and comment the lines 117-119 */
+         * 115-122 and comment the lines 125-131
+         * I also have to change init to take only
+         * one parameter, line 86 remove the second
+         * parameter and SetChannelBroker line 31
+         * (remove the second parameter) */
 
+//        init(4960);//4960
 //        String string_socket = serverSocket.getLocalSocketAddress().toString().split("/")[1];
 //        String[] array = string_socket.split(":");
 //        InetAddress hear_ip = InetAddress.getByName("127.0.0.1");
@@ -114,11 +121,15 @@ public class AppNodeImpl {
 //        Log.d("HEAR PORT", Integer.toString(hear_port));
 //        hear_address = new InetSocketAddress(hear_ip, hear_port);//do not forget to make the necessary redirections.
 
-        InetAddress hear_ip = InetAddress.getByName("192.168.2.6");//this is the phone IP address.
+        //PHONES IP ADDRESS
+        WifiManager wm = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        String hear_ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
         int hear_port = 4960;
         hear_address = new InetSocketAddress(hear_ip, hear_port);
+        init(hear_port, hear_ip);
         objectOutputStream.writeObject(hear_address);
         objectOutputStream.flush();
+
 
         //GET RESPONSE IF CHANNEL NAME IS UNIQUE
         unique = (boolean) objectInputStream.readObject();
@@ -610,7 +621,7 @@ public class AppNodeImpl {
                 }
                 try {
                     nf = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
-                            .toString() + "/Fetched Videos/" + channelName + "_" + videoID + ".mp4");
+                            .toString() + "/Fetched Videos/", channelName + "_" + videoID + ".mp4");
                     fw = new FileOutputStream(nf, true);
                     for (byte[] ar : chunks) {
                         fw.write(ar);
